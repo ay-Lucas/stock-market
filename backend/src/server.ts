@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
+import stockRoutes from "./routes/stockRoutes";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ app.use(express.json());
 app.listen(PORT, () => {
   console.log(`Express server running on http://localhost:${PORT}`);
 });
+
+app.use("/api/stocks", stockRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, Express!");
