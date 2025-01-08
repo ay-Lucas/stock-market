@@ -9,6 +9,7 @@ export interface StockData {
   changePercent?: number;
   marketCap?: number;
   quoteTime?: string;
+  delay?: number;
 }
 
 export default async function fetchStockData(
@@ -31,6 +32,7 @@ export default async function fetchStockData(
       changePercent: quote.regularMarketChangePercent,
       marketCap: quote.marketCap,
       quoteTime: new Date(quote.regularMarketTime ?? 0 * 1000).toISOString(), // Convert timestamp to ISO string
+      delay: quote.exchangeDataDelayedBy,
     };
   } catch (error: unknown) {
     console.error(
