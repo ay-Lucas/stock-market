@@ -7,9 +7,9 @@ router.get("/:symbol", async (req: Request, res: Response) => {
   const { symbol } = req.params;
 
   try {
-    const stockData: StockData = await fetchStockData(symbol);
+    const uppercaseSymbol = symbol.toUpperCase();
+    const stockData: StockData = await fetchStockData(uppercaseSymbol);
     res.status(200).json(stockData);
-    console.log(stockData);
   } catch (error: unknown) {
     console.error(
       `Error fetching data for ${symbol}:`,
