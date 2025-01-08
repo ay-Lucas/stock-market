@@ -1,38 +1,42 @@
-import yahooFinance from "yahoo-finance2";
-
 export interface StockData {
-  symbol: string;
-  name?: string;
-  price?: number;
-  currency?: string;
-  change?: number;
-  changePercent?: number;
-  marketCap?: number;
-  quoteTime?: string;
-  delay?: number;
+  currentPrice: number;
+  highPrice: number;
+  lowPrice: number;
+  openPrice: number;
+  previousClose: number;
+  timestamp: string;
 }
 
 export default async function fetchStockData(
   symbol: string,
 ): Promise<StockData> {
   try {
-    const quote = await yahooFinance.quote(symbol);
-    quote.nameChangeDate;
+    const API_KEY = process.env.FINNHUB_API_KEY;
+    if (!API_KEY) {
+      throw new Error("Finnhub API key is missing");
+    }
 
-    if (!quote) {
+    const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Error fetching stock data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || !data.c) {
       throw new Error(`No data found for symbol: ${symbol}`);
     }
 
     return {
-      symbol: quote.symbol,
-      name: quote.shortName,
-      price: quote.regularMarketPrice,
-      currency: quote.currency,
-      change: quote.regularMarketChange,
-      changePercent: quote.regularMarketChangePercent,
-      marketCap: quote.marketCap,
-      quoteTime: new Date(quote.regularMarketTime ?? 0 * 1000).toISOString(), // Convert timestamp to ISO string
-      delay: quote.exchangeDataDelayedBy,
+      currentPrice: data.c,
+      highPrice: data.h,
+      lowPrice: data.l,
+      openPrice: data.o,
+      previousClose: data.pc,
+      timestamp: new Date(data.t * 1000).toISOString(),
     };
   } catch (error: unknown) {
     console.error(
