@@ -5,6 +5,7 @@ export type YahooInterval =
   | "15m" // (requires premium)
   | "30m" // (requires premium)
   | "60m"
+  | "90m"
   | "1h"
   | "1d"
   | "5d"
