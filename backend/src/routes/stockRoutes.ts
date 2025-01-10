@@ -8,19 +8,20 @@ import { validateFields } from "../middlewares/validateFields";
 
 const router = express.Router();
 
-router.get("/:symbol/quote", validateFields(["symbol"]), getStockQuote);
+router.use(validateFields(["symbol"]));
 
+router.get("/:symbol/quote", getStockQuote);
 router.get(
   "/:symbol/historical",
-  validateFields(["symbol"], ["from", "to"]),
+  validateFields(["from", "to"]),
   validateQueryDates,
   getHistoricalData,
 );
 
-router.get("/:symbol/summary", validateFields(["symbol"]), getStockSummary);
+router.get("/:symbol/summary", getStockSummary);
 router.get(
   "/:symbol/dividends",
-  validateFields(["symbol"], ["from", "to"]),
+  validateFields(["from", "to"]),
   validateQueryDates,
   getDividendHistory,
 );
