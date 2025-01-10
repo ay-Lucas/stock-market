@@ -6,11 +6,14 @@ import { getDividendHistory } from "../controllers/dividendController";
 import { validateQueryDates } from "../middlewares/validateQueryDates";
 import { validateFields } from "../middlewares/validateFields";
 import { getStockNews } from "../controllers/newsController";
+import { getEarningsData } from "../controllers/earningsController";
+import { validateSymbolCase } from "../middlewares/validateSymbolCase";
 
 const router = express.Router();
 
-router.use(validateFields(["symbol"]));
+router.param("symbol", validateSymbolCase);
 
+// Define routes
 router.get("/:symbol/quote", getStockQuote);
 router.get(
   "/:symbol/historical",
@@ -26,6 +29,6 @@ router.get(
   validateQueryDates,
   getDividendHistory,
 );
-
 router.get("/:symbol/news", getStockNews);
+router.get("/:symbol/earnings", getEarningsData);
 export default router;
