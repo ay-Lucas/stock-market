@@ -11,15 +11,7 @@ export const validateHistoricalQueryParams = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { symbol } = req.params;
   const { from, to, interval, multiplier } = req.query;
-
-  // Ensure the symbol is provided in the URL
-  if (!symbol) {
-    return res.status(400).json({
-      error: "Missing required parameter: symbol",
-    });
-  }
 
   // Ensure required query parameters are present
   if (!from || !to || !interval) {
