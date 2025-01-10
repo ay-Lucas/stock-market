@@ -13,10 +13,22 @@ export const validateFields = (
   return (req: Request, res: Response, next: NextFunction): void => {
     const errors: string[] = [];
 
-    // Validate `req.params`
+    // Validate `req.params` and Uppercase symbol
     params.forEach((param) => {
       if (!req.params[param]) {
         errors.push(`Missing required param: '${param}'`);
+      } else if (param === "symbol") {
+        const uppercaseSymbol = req.params[param].toUpperCase();
+        // Check if stock symbol is uppercase
+        if (req.params[param] !== uppercaseSymbol) {
+          const correctedUrl = req.originalUrl.replace(
+            req.params[param],
+            uppercaseSymbol,
+          );
+          res.redirect(correctedUrl); // redirect to URL with uppercase Symbol
+          errors.push(`Symbol is contains lowercase letters`);
+          return;
+        }
       }
     });
 
