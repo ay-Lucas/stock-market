@@ -13,6 +13,7 @@ router.get("/:symbol/quote", validateFields(["symbol"]), getStockQuote);
 router.get(
   "/:symbol/historical",
   validateFields(["symbol"], ["from", "to"]),
+  validateQueryDates,
   getHistoricalData,
 );
 
@@ -20,6 +21,7 @@ router.get("/:symbol/summary", validateFields(["symbol"]), getStockSummary);
 router.get(
   "/:symbol/dividends",
   validateFields(["symbol"], ["from", "to"]),
+  validateQueryDates,
   getDividendHistory,
 );
 export default router;
