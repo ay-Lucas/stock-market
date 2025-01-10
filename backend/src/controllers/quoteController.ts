@@ -8,12 +8,7 @@ export const getStockQuote = async (
   const { symbol } = req.params;
 
   try {
-    if (!symbol) {
-      res.status(400).json({ error: "Symbol parameter is required" });
-    }
-
-    const uppercaseSymbol = symbol.toUpperCase(); // Ensure symbol is uppercase
-    const stockData = await fetchStockQuote(uppercaseSymbol);
+    const stockData = await fetchStockQuote(symbol);
 
     res.status(200).json(stockData);
   } catch (error: unknown) {

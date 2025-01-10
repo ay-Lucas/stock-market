@@ -8,11 +8,6 @@ export const getStockSummary = async (
   const { symbol } = req.params;
 
   try {
-    if (!symbol) {
-      res.status(400).json({ error: "Symbol parameter is required" });
-      return;
-    }
-
     const data = await yahooFinance.quoteSummary(symbol, {
       modules: ["summaryProfile", "summaryDetail"],
     });
