@@ -9,12 +9,12 @@ export const getDividendHistory = async (
   res: Response,
 ): Promise<void> => {
   const { symbol } = req.params;
-  const { period1, period2 } = req.query;
+  const { from, to } = req.query;
 
   try {
     const data = await yahooFinance.historical(symbol, {
-      period1: Number(period1),
-      period2: Number(period2),
+      period1: Number(from),
+      period2: Number(to),
       events: "dividends",
     });
 
