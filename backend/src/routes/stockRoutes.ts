@@ -5,6 +5,7 @@ import { getStockSummary } from "../controllers/summaryController";
 import { getDividendHistory } from "../controllers/dividendController";
 import { validateQueryDates } from "../middlewares/validateQueryDates";
 import { validateFields } from "../middlewares/validateFields";
+import { getStockNews } from "../controllers/newsController";
 
 const router = express.Router();
 
@@ -25,4 +26,6 @@ router.get(
   validateQueryDates,
   getDividendHistory,
 );
+
+router.get("/:symbol/news", getStockNews);
 export default router;
