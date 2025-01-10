@@ -4,7 +4,6 @@ import { getHistoricalData } from "../controllers/historicalController";
 import { getStockSummary } from "../controllers/summaryController";
 import { getDividendHistory } from "../controllers/dividendController";
 import { validateQueryDates } from "../middlewares/validateQueryDates";
-import { validateSymbolParam } from "../middlewares/validateSymbolParam";
 import { validateFields } from "../middlewares/validateFields";
 
 const router = express.Router();
