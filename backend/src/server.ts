@@ -7,6 +7,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (process.env.NODE_ENV === "development") {
+  app.set("json spaces", 2);
+}
 app.use(express.json());
 
 app.listen(PORT, () => {
