@@ -10,9 +10,9 @@ import { getEarningsData } from "../controllers/earningsController";
 import { validateSymbolCase } from "../middlewares/validateSymbolCase";
 import { getFinancialData } from "../controllers/financialsController";
 import { getSearchResults } from "../controllers/searchController";
+import { getTrendingData } from "../controllers/trendingController";
 
 const router = express.Router();
-
 router.param("symbol", validateSymbolCase);
 
 // Define routes
@@ -35,5 +35,6 @@ router.get("/:symbol/news", getStockNews);
 router.get("/:symbol/earnings", getEarningsData);
 router.get("/:symbol/financials", getFinancialData);
 router.get("/search", validateFields([], ["q"]), getSearchResults);
+router.get("/trending", validateFields([], ["iso2", "count"]), getTrendingData);
 
 export default router;
