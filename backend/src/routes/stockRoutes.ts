@@ -12,6 +12,7 @@ import { getFinancialData } from "../controllers/financialsController";
 import { getSearchResults } from "../controllers/searchController";
 import { getTrendingData } from "../controllers/trendingController";
 import { getRecommendationsData } from "../controllers/recommendationsController";
+import { getInsightsData } from "../controllers/insightsController";
 
 const router = express.Router();
 router.param("symbol", validateSymbolParam);
@@ -38,5 +39,5 @@ router.get("/:symbol/financials", getFinancialData);
 router.get("/search", validateFields([], ["q"]), getSearchResults);
 router.get("/trending", validateFields([], ["iso2", "count"]), getTrendingData);
 router.get("/:symbol/recommendations", getRecommendationsData);
-
+router.get("/:symbol/insights", getInsightsData);
 export default router;
