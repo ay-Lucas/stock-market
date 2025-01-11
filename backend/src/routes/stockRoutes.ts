@@ -15,6 +15,7 @@ import { getRecommendationsData } from "../controllers/recommendationsController
 import { getInsightsData } from "../controllers/insightsController";
 import { getDailyGainersData } from "../controllers/dailyGainersController";
 import { getScreenerData } from "../controllers/screenerController";
+import { getOptionsData } from "../controllers/optionsController";
 
 const router = express.Router();
 router.param("symbol", validateSymbolParam);
@@ -47,5 +48,10 @@ router.get(
   "/screener",
   validateFields([], ["scrId", "count"]),
   getScreenerData,
+);
+router.get(
+  "/:symbol/options",
+  validateFields([], ["expirationDate"]),
+  getOptionsData,
 );
 export default router;
