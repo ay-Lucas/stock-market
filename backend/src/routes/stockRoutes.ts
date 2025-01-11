@@ -18,7 +18,7 @@ router.param("symbol", validateSymbolCase);
 router.get("/:symbol/quote", getStockQuote);
 router.get(
   "/:symbol/historical",
-  validateFields(["from", "to"]),
+  validateFields([], ["from", "to"]),
   validateQueryDates,
   getHistoricalData,
 );
@@ -26,7 +26,7 @@ router.get(
 router.get("/:symbol/summary", getStockSummary);
 router.get(
   "/:symbol/dividends",
-  validateFields(["from", "to"]),
+  validateFields([], ["from", "to"]),
   validateQueryDates,
   getDividendHistory,
 );
