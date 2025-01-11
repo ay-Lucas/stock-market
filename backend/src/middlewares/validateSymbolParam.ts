@@ -18,6 +18,14 @@ export const validateSymbolParam = (
     res.status(400).json({ error: "Symbol stock ticker must be uppercase" });
     return;
   }
+  const symbolArray = symbol.split(","); //  Some routes allow an array of symbols
+  const onlyAlphabetic = symbolArray.every((str) => isAlphabetic(str));
+  if (!onlyAlphabetic) {
+    res.status(400).json({
+      error: "Symbol param must only contain uppercase alphabetic characters",
+    });
+    return;
+  }
   next();
 };
 
