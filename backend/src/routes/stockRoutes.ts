@@ -9,6 +9,7 @@ import { getStockNews } from "../controllers/newsController";
 import { getEarningsData } from "../controllers/earningsController";
 import { validateSymbolCase } from "../middlewares/validateSymbolCase";
 import { getFinancialData } from "../controllers/financialsController";
+import { getSearchResults } from "../controllers/searchController";
 
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.get(
 router.get("/:symbol/news", getStockNews);
 router.get("/:symbol/earnings", getEarningsData);
 router.get("/:symbol/financials", getFinancialData);
+router.get("/search", validateFields([], ["q"]), getSearchResults);
 
 export default router;
