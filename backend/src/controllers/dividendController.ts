@@ -12,9 +12,12 @@ export const getDividendHistory = async (
   const { from, to } = req.query;
 
   try {
+    const period1 = Math.floor(new Date(from as string).getTime() / 1000);
+    const period2 = Math.floor(new Date(to as string).getTime() / 1000);
+
     const data = await yahooFinance.historical(symbol, {
-      period1: Number(from),
-      period2: Number(to),
+      period1: period1,
+      period2: period2,
       events: "dividends",
     });
 
