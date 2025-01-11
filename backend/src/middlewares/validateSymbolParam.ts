@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 /**
  * Middleware to ensure the `symbol` parameter is in uppercase.
  */
-export const validateSymbolCase = (
+export const validateSymbolParam = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -20,3 +20,7 @@ export const validateSymbolCase = (
   }
   next();
 };
+
+function isAlphabetic(str: string) {
+  return /^[a-zA-Z]+$/.test(str);
+}

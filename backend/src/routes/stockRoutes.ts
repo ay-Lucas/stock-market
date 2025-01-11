@@ -7,14 +7,14 @@ import { validateQueryDates } from "../middlewares/validateQueryDates";
 import { validateFields } from "../middlewares/validateFields";
 import { getStockNews } from "../controllers/newsController";
 import { getEarningsData } from "../controllers/earningsController";
-import { validateSymbolCase } from "../middlewares/validateSymbolCase";
+import { validateSymbolParam } from "../middlewares/validateSymbolParam";
 import { getFinancialData } from "../controllers/financialsController";
 import { getSearchResults } from "../controllers/searchController";
 import { getTrendingData } from "../controllers/trendingController";
 import { getRecommendationsData } from "../controllers/recommendationsController";
 
 const router = express.Router();
-router.param("symbol", validateSymbolCase);
+router.param("symbol", validateSymbolParam);
 
 // Define routes
 router.get("/:symbol/quote", getStockQuote);
