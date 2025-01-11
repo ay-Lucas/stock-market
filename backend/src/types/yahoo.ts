@@ -12,3 +12,20 @@ export type YahooInterval =
   | "1wk"
   | "1mo"
   | "3mo";
+
+export type YahooScreenerId =
+  | "aggressive_small_caps"
+  | "conservative_foreign_funds"
+  | "day_gainers"
+  | "day_losers"
+  | "growth_technology_stocks"
+  | "high_yield_bond"
+  | "most_actives"
+  | "most_shorted_stocks"
+  | "portfolio_anchors"
+  | "small_cap_gainers"
+  | "solid_large_growth_funds"
+  | "solid_midcap_growth_funds"
+  | "top_mutual_funds"
+  | "undervalued_growth_stocks"
+  | "undervalued_large_caps";
