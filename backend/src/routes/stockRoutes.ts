@@ -13,6 +13,7 @@ import { getSearchResults } from "../controllers/searchController";
 import { getTrendingData } from "../controllers/trendingController";
 import { getRecommendationsData } from "../controllers/recommendationsController";
 import { getInsightsData } from "../controllers/insightsController";
+import { getDailyGainersData } from "../controllers/dailyGainersController";
 
 const router = express.Router();
 router.param("symbol", validateSymbolParam);
@@ -40,4 +41,5 @@ router.get("/search", validateFields([], ["q"]), getSearchResults);
 router.get("/trending", validateFields([], ["iso2", "count"]), getTrendingData);
 router.get("/:symbol/recommendations", getRecommendationsData);
 router.get("/:symbol/insights", getInsightsData);
+router.get("/dailyGainers", validateFields([], ["count"]), getDailyGainersData);
 export default router;
