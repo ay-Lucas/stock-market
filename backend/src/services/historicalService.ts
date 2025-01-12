@@ -1,6 +1,6 @@
 import { fetchPolygonHistoricalData } from "../providers/polygonProvider";
 import { fetchYahooHistoricalData } from "../providers/yahooProvider";
-import { YahooInterval } from "../types/yahoo";
+import { YahooInterval } from "@shared/types/yahoo";
 import { isYahooInterval } from "../utils/intervalUtils";
 
 export const fetchHistoricalData = async (

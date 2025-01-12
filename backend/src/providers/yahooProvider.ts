@@ -1,6 +1,6 @@
 import yahooFinance from "yahoo-finance2";
-import { StockData } from "../types/stock";
-import { YahooInterval } from "../types/yahoo";
+import { StockData } from "@shared/types/stock";
+import { YahooInterval } from "@shared/types/yahoo";
 
 export const fetchYahooStockQuote = async (
   symbol: string,

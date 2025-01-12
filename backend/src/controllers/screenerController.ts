@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import yahooFinance from "yahoo-finance2";
 import { isYahooScreenerId, validScrIds } from "../utils/screenerUtils";
-import { YahooScreenerId } from "../types/yahoo";
+import { YahooScreenerId } from "@shared/types/yahoo";
 import { ScreenerResult } from "yahoo-finance2/dist/esm/src/modules/screener";
 
 export const getScreenerData = async (

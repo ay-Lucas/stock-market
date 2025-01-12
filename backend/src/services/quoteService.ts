@@ -1,6 +1,6 @@
 import { fetchPolygonQuote } from "../providers/polygonProvider";
 import { fetchYahooStockQuote } from "../providers/yahooProvider";
-import { StockData } from "../types/stock";
+import { StockData } from "@shared/types/stock";
 
 export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
   try {

@@ -1,4 +1,4 @@
-import { StockData } from "../types/stock";
+import { StockData } from "@shared/types/stock";
 
 /**
  * Fetch real-time stock data for a given symbol from Finnhub API.

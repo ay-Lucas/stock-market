@@ -1,4 +1,4 @@
-import { YahooScreenerId } from "../types/yahoo";
+import { YahooScreenerId } from "@shared/types/yahoo";
 
 export const validScrIds: YahooScreenerId[] = [
   "aggressive_small_caps",

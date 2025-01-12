@@ -1,4 +1,4 @@
-import { StockData } from "../types/stock";
+import { StockData } from "@shared/types/stock";
 
 export const fetchPolygonQuote = async (symbol: string): Promise<StockData> => {
   const API_KEY = process.env.POLYGON_API_KEY;

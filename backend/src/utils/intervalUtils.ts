@@ -1,5 +1,5 @@
-import { PolygonInterval } from "../types/polygon";
-import { YahooInterval } from "../types/yahoo";
+import { PolygonInterval } from "@shared/types/polygon";
+import { YahooInterval } from "@shared/types/yahoo";
 
 // Finer intervals require Yahoo Finance premium
 export const yahooIntervals: YahooInterval[] = [
