@@ -8,10 +8,24 @@ export interface StockData {
 }
 
 export interface HistoricalData {
-  time: string; // ISO date
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
+  meta?: {
+    currency?: string;
+    symbol: string;
+    exchangeName?: string;
+    instrumentType?: string;
+    firstTradeDate?: Date | null;
+    timezone?: string;
+    regularMarketPrice?: number;
+  };
+  results?: Array<{
+    c?: number; // Close price
+    h?: number; // High price
+    l?: number; // Low price
+    o?: number; // Open price
+    t: number; // Timestamp
+    v?: number; // Volume
+  }>;
+  ticker?: string;
+  status?: string;
+  errors?: string[];
 }

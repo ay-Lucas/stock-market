@@ -29,3 +29,16 @@ export type YahooScreenerId =
   | "top_mutual_funds"
   | "undervalued_growth_stocks"
   | "undervalued_large_caps";
+
+// Re-export the type from Yahoo Finance
+export {
+  SearchResult,
+  ScreenerResult,
+  DailyGainersResult,
+  RecommendationsBySymbolResponseArray,
+  HistoricalDividendsResult,
+  QuoteSummaryResult,
+  InsightsResult,
+  OptionsResult,
+  TrendingSymbolsResult,
+} from "../../backend/src/types/yahoo";
