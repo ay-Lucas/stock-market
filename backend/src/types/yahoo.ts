@@ -1,0 +1,9 @@
+export { SearchResult } from "yahoo-finance2/dist/esm/src/modules/search";
+export { ScreenerResult } from "yahoo-finance2/dist/esm/src/modules/screener";
+export { DailyGainersResult } from "yahoo-finance2/dist/esm/src/modules/dailyGainers";
+export { RecommendationsBySymbolResponseArray } from "yahoo-finance2/dist/esm/src/modules/recommendationsBySymbol";
+export { HistoricalDividendsResult } from "yahoo-finance2/dist/esm/src/modules/historical";
+export { QuoteSummaryResult } from "yahoo-finance2/dist/esm/src/modules/quoteSummary-iface";
+export { InsightsResult } from "yahoo-finance2/dist/esm/src/modules/insights";
+export { OptionsResult } from "yahoo-finance2/dist/esm/src/modules/options";
+export { TrendingSymbolsResult } from "yahoo-finance2/dist/esm/src/modules/trendingSymbols";
