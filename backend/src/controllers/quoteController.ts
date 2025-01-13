@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { fetchStockQuote } from "../services/quoteService";
+import { StockData } from "@shared/types/stock";
 
 export const getStockQuote = async (
   req: Request,
@@ -8,7 +9,7 @@ export const getStockQuote = async (
   const { symbol } = req.params;
 
   try {
-    const stockData = await fetchStockQuote(symbol);
+    const stockData: StockData = await fetchStockQuote(symbol);
 
     res.status(200).json(stockData);
   } catch (error: unknown) {

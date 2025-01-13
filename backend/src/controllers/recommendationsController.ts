@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import yahooFinance from "yahoo-finance2";
+import { RecommendationsBySymbolResponseArray } from "yahoo-finance2/dist/esm/src/modules/recommendationsBySymbol";
 
 export const getRecommendationsData = async (
   req: Request,
@@ -8,7 +9,8 @@ export const getRecommendationsData = async (
   const { symbol } = req.params;
   const symbolArray = symbol.split(",");
   try {
-    const data = await yahooFinance.recommendationsBySymbol(symbolArray);
+    const data: RecommendationsBySymbolResponseArray =
+      await yahooFinance.recommendationsBySymbol(symbolArray);
 
     if (!data) {
       res

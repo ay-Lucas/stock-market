@@ -1,6 +1,7 @@
 import yahooFinance from "yahoo-finance2";
 import { StockData } from "@shared/types/stock";
 import { YahooInterval } from "@shared/types/yahoo";
+import { ChartResultArray } from "yahoo-finance2/dist/esm/src/modules/chart";
 
 export const fetchYahooStockQuote = async (
   symbol: string,
@@ -34,7 +35,7 @@ export const fetchYahooHistoricalData = async (
   from: string,
   to: string,
   interval: YahooInterval,
-) => {
+): Promise<ChartResultArray> => {
   return yahooFinance.chart(symbol, {
     period1: from,
     period2: to,

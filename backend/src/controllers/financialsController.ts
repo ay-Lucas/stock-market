@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import yahooFinance from "yahoo-finance2";
+import { QuoteSummaryResult } from "yahoo-finance2/dist/esm/src/modules/quoteSummary-iface";
 
 export const getFinancialData = async (
   req: Request,
@@ -8,7 +9,7 @@ export const getFinancialData = async (
   const { symbol } = req.params;
 
   try {
-    const data = await yahooFinance.quoteSummary(symbol, {
+    const data: QuoteSummaryResult = await yahooFinance.quoteSummary(symbol, {
       modules: ["financialData"],
     });
 

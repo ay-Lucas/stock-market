@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { QuoteSummaryResult } from "src/types/yahoo";
 import yahooFinance from "yahoo-finance2";
 
 export const getStockSummary = async (
@@ -8,7 +9,7 @@ export const getStockSummary = async (
   const { symbol } = req.params;
 
   try {
-    const data = await yahooFinance.quoteSummary(symbol, {
+    const data: QuoteSummaryResult = await yahooFinance.quoteSummary(symbol, {
       modules: ["summaryProfile", "summaryDetail"],
     });
 

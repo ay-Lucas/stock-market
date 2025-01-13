@@ -1,3 +1,4 @@
+import { PolygonAggregateBarResponse } from "@shared/types/polygon";
 import { StockData } from "@shared/types/stock";
 
 export const fetchPolygonQuote = async (symbol: string): Promise<StockData> => {
@@ -14,7 +15,6 @@ export const fetchPolygonQuote = async (symbol: string): Promise<StockData> => {
   }
 
   const data = await response.json();
-
   return {
     currentPrice: data.c,
     highPrice: data.h,
@@ -40,7 +40,7 @@ export const fetchPolygonHistoricalData = async (
   to: string,
   interval: string,
   multiplier: number,
-): Promise<any> => {
+): Promise<PolygonAggregateBarResponse> => {
   const API_KEY = process.env.POLYGON_API_KEY;
   const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/${multiplier}/${interval}/${from}/${to}?apiKey=${API_KEY}`;
 

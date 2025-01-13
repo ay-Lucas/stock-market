@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import yahooFinance from "yahoo-finance2";
+import { SearchResult } from "yahoo-finance2/dist/esm/src/modules/search";
 
 export const getStockNews = async (
   req: Request,
@@ -8,7 +9,7 @@ export const getStockNews = async (
   const { symbol } = req.params;
 
   try {
-    const data = await yahooFinance.search(symbol);
+    const data: SearchResult = await yahooFinance.search(symbol);
 
     if (!data || !data.news) {
       res.status(404).json({ error: `No news found for symbol: ${symbol}` });

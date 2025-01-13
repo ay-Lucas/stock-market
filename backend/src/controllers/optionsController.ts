@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import yahooFinance from "yahoo-finance2";
+import { OptionsResult } from "yahoo-finance2/dist/esm/src/modules/options";
 
 export const getOptionsData = async (
   req: Request,
@@ -23,7 +24,10 @@ export const getOptionsData = async (
   }
 
   try {
-    const data = await yahooFinance.options(symbol, queryOptions);
+    const data: OptionsResult = await yahooFinance.options(
+      symbol,
+      queryOptions,
+    );
 
     if (!data) {
       res.status(404).json({ error: `No options found for ${symbol}` });

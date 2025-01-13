@@ -6,6 +6,7 @@ import {
   polygonIntervals,
   yahooIntervals,
 } from "../utils/intervalUtils";
+import { HistoricalData } from "@shared/types/stock";
 
 export const getHistoricalData = async (
   req: Request,
@@ -48,12 +49,13 @@ export const getHistoricalData = async (
 
   try {
     const uppercaseSymbol = symbol.toUpperCase(); // Ensure symbol is uppercase
-    const historicalData = await fetchHistoricalData(
-      uppercaseSymbol,
-      from as string,
-      to as string,
-      interval as string,
-    );
+    const historicalData: HistoricalData | undefined =
+      await fetchHistoricalData(
+        uppercaseSymbol,
+        from as string,
+        to as string,
+        interval as string,
+      );
 
     res.status(200).json(historicalData);
   } catch (error: unknown) {
