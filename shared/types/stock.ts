@@ -17,15 +17,17 @@ export interface HistoricalData {
     timezone?: string;
     regularMarketPrice?: number;
   };
-  results?: Array<{
-    c?: number; // Close price
-    h?: number; // High price
-    l?: number; // Low price
-    o?: number; // Open price
-    t: number; // Timestamp
-    v?: number; // Volume
-  }>;
+  results: Candlestick[];
   ticker?: string;
   status?: string;
   errors?: string[];
+}
+
+export interface Candlestick {
+  close?: number;
+  high?: number;
+  low?: number;
+  open?: number;
+  timestamp: number;
+  volume?: number;
 }

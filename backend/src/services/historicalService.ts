@@ -31,12 +31,12 @@ export const fetchHistoricalData = async (
           exchangeName: yahooData.meta.exchangeName,
         },
         results: yahooData.quotes?.map((quote) => ({
-          c: quote.close ?? 0,
-          h: quote.high ?? 0,
-          l: quote.low ?? 0,
-          o: quote.open ?? 0,
-          t: new Date(quote.date).getTime() ?? 0,
-          v: quote.volume ?? 0,
+          close: quote.close ?? 0,
+          high: quote.high ?? 0,
+          low: quote.low ?? 0,
+          open: quote.open ?? 0,
+          timestamp: new Date(quote.date).getTime() ?? 0,
+          volume: quote.volume ?? 0,
         })),
       };
     } catch (yahooError) {
@@ -61,12 +61,12 @@ export const fetchHistoricalData = async (
     return {
       ticker: polygonData.ticker,
       results: polygonData.results.map((result) => ({
-        c: result.c,
-        h: result.h,
-        l: result.l,
-        o: result.o,
-        t: result.t,
-        v: result.v,
+        close: result.c,
+        high: result.h,
+        low: result.l,
+        open: result.o,
+        timestamp: result.t,
+        volume: result.v,
       })),
       status: polygonData.status,
     };
