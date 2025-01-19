@@ -28,7 +28,10 @@ export const Chart: React.FC<ChartComponentProps> = ({
       width: chartContainerRef.current.clientWidth,
       height: 300,
     });
-    chart.timeScale().fitContent();
+    chart.timeScale().applyOptions({
+      timeVisible: true,
+      secondsVisible: false,
+    });
 
     const newSeries: ISeriesApi<"Area"> = chart.addAreaSeries({
       lineColor,
