@@ -32,8 +32,8 @@ export const fetchYahooStockQuote = async (
  */
 export const fetchYahooHistoricalData = async (
   symbol: string,
-  from: string,
-  to: string,
+  from: string | Date,
+  to: string | Date,
   interval: YahooInterval,
 ): Promise<ChartResultArray> => {
   return yahooFinance.chart(symbol, {

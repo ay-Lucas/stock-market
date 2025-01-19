@@ -1,22 +1,17 @@
-import { Request, Response } from "express";
-import { fetchHistoricalData } from "../services/historicalService";
+import { Request, Response, NextFunction } from "express";
 import {
   isPolygonInterval,
   isYahooInterval,
   polygonIntervals,
   yahooIntervals,
 } from "../utils/intervalUtils";
-import { HistoricalData } from "@shared/types/stock";
 
-export const getHistoricalData = async (
+export const validateHistoricalQuery = (
   req: Request,
   res: Response,
-): Promise<void> => {
-  const { symbol } = req.params;
-
-  // period1 & period2 added and validated by middleware
-  const { period1, period2, interval, multiplier } = req.query;
-
+  next: NextFunction,
+) => {
+  const { interval, multiplier } = req.query;
   // Validate `interval`
   if (
     !isYahooInterval(interval as string) &&
@@ -48,23 +43,5 @@ export const getHistoricalData = async (
       return;
     }
   }
-
-  try {
-    const uppercaseSymbol = symbol.toUpperCase(); // Ensure symbol is uppercase
-    const historicalData: HistoricalData | undefined =
-      await fetchHistoricalData(
-        uppercaseSymbol,
-        period1 as string,
-        period2 as string,
-        interval as string,
-      );
-
-    res.status(200).json(historicalData);
-  } catch (error: unknown) {
-    console.error(
-      `Error fetching historical data for ${symbol}:`,
-      (error as Error).message,
-    );
-    res.status(500).json({ error: "Failed to fetch historical data" });
-  }
+  next();
 };

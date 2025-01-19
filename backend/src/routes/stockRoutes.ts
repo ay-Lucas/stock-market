@@ -1,4 +1,5 @@
 import express from "express";
+import { validateHistoricalQuery } from "../middlewares/validateHistoricalQuery";
 import { getStockQuote } from "../controllers/quoteController";
 import { getHistoricalData } from "../controllers/historicalController";
 import { getStockSummary } from "../controllers/summaryController";
@@ -25,6 +26,7 @@ router.get("/:symbol/quote", getStockQuote);
 router.get(
   "/:symbol/historical",
   validateFields([], ["from", "to"]),
+  validateHistoricalQuery,
   validateQueryDates,
   getHistoricalData,
 );

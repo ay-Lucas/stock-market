@@ -1,15 +1,19 @@
 import { Request, Response, NextFunction } from "express";
+import { isYahooInterval } from "../utils/intervalUtils";
 
 /**
- * Ensures 'from' and 'to' are valid dates or Unix MS timestamps,
- * and 'from' is not after 'to'.
+ * Validates 'from' and 'to' query parameters as valid dates or Unix timestamps,
+ * and ensures 'from' is not after 'to'.
  */
 export const validateQueryDates = (
   req: Request,
   res: Response,
   next: NextFunction,
 ): void => {
-  const { from, to } = req.query;
+  let period1: string | number;
+  let period2: string | number;
+
+  const { from, to, interval } = req.query;
 
   if (!from || !to) {
     res
@@ -18,19 +22,28 @@ export const validateQueryDates = (
     return;
   }
 
-  const toUnixSeconds = (value: string): number => {
-    const timestamp = /^\d+$/.test(value) ? Number(value) : Date.parse(value);
-    return Math.floor(timestamp / 1000);
-  };
+  let fromDate, toDate;
+  if (/^\d+$/.test(from as string) && /^\d+$/.test(to as string)) {
+    fromDate = new Date(Number(from));
+    toDate = new Date(Number(to));
+  } else {
+    fromDate = new Date(from as string);
+    toDate = new Date(to as string);
+  }
 
-  const period1 = toUnixSeconds(from as string);
-  const period2 = toUnixSeconds(to as string);
-
-  if (isNaN(period1) || isNaN(period2)) {
+  if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
     res.status(400).json({
-      error: "'from' and 'to' must be valid dates or Unix timestamps",
+      error: "'from' and 'to' must be valid Unix timestamps or date strings",
     });
     return;
+  }
+
+  if (isYahooInterval(interval as string)) {
+    period1 = fromDate.toISOString();
+    period2 = toDate.toISOString();
+  } else {
+    period1 = fromDate.getTime();
+    period2 = toDate.getTime();
   }
 
   if (period1 > period2) {
@@ -38,7 +51,7 @@ export const validateQueryDates = (
     return;
   }
 
-  // Attach validated dates to the request object
+  // Attach validated and transformed periods to the request object
   req.query.period1 = period1.toString();
   req.query.period2 = period2.toString();
 
