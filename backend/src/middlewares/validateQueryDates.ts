@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 /**
- * Ensures they are valid dates and 'from' is not after 'to'.
+ * Ensures 'from' and 'to' are valid dates or Unix MS timestamps,
+ * and 'from' is not after 'to'.
  */
 export const validateQueryDates = (
   req: Request,
@@ -17,11 +18,18 @@ export const validateQueryDates = (
     return;
   }
 
-  const period1 = Math.floor(new Date(from as string).getTime() / 1000);
-  const period2 = Math.floor(new Date(to as string).getTime() / 1000);
+  const toUnixSeconds = (value: string): number => {
+    const timestamp = /^\d+$/.test(value) ? Number(value) : Date.parse(value);
+    return Math.floor(timestamp / 1000);
+  };
+
+  const period1 = toUnixSeconds(from as string);
+  const period2 = toUnixSeconds(to as string);
 
   if (isNaN(period1) || isNaN(period2)) {
-    res.status(400).json({ error: "'from' and 'to' must be valid dates" });
+    res.status(400).json({
+      error: "'from' and 'to' must be valid dates or Unix timestamps",
+    });
     return;
   }
 
