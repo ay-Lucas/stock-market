@@ -10,7 +10,11 @@ export const getStockSummary = async (
 
   try {
     const data: QuoteSummaryResult = await yahooFinance.quoteSummary(symbol, {
-      modules: ["summaryProfile", "summaryDetail"],
+      modules: [
+        "summaryProfile",
+        "summaryDetail",
+        "defaultKeyStatistics", // includes trailingEps (EPS TTM) and other key stats
+      ],
     });
 
     if (!data) {
