@@ -18,7 +18,7 @@ export default function StockDashboard() {
         setError(null);
         const now = new Date();
         const from = new Date();
-        from.setMonth(now.getMonth() - 6);
+        from.setFullYear(now.getFullYear() - 20);
         const hd = await fetchStockData(ticker, from, now, "1d");
         const formatted = (hd?.results ?? []).map((e) => ({
           time: new Date(e.timestamp).toISOString().slice(0, 10),

@@ -15,54 +15,54 @@ export const Chart: React.FC<ChartComponentProps> = ({
   } = {},
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
 
+  // Initialize chart once
   useEffect(() => {
-    if (!chartContainerRef.current) return;
-
-    const chart: IChartApi = createChart(chartContainerRef.current, {
+    if (!chartContainerRef.current || chartRef.current) return;
+    const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: backgroundColor },
         textColor,
-        attributionLogo: false,
+        attributionLogo: false as unknown as boolean, // keep silent if lib types differ
       },
       width: chartContainerRef.current.clientWidth,
       height: 300,
     });
-    chart.timeScale().applyOptions({
-      timeVisible: true,
-      secondsVisible: false,
-    });
-
-    const newSeries: ISeriesApi<"Area"> = chart.addAreaSeries({
+    chart.timeScale().applyOptions({ timeVisible: true, secondsVisible: false });
+    const series = chart.addAreaSeries({
       lineColor,
       topColor: areaTopColor,
       bottomColor: areaBottomColor,
     });
-    newSeries.setData(data);
+    chartRef.current = chart;
+    seriesRef.current = series;
 
     const handleResize = () => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({
+      if (chartContainerRef.current && chartRef.current) {
+        chartRef.current.applyOptions({
           width: chartContainerRef.current.clientWidth,
           watermark: { visible: false },
         });
       }
     };
-
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
       chart.remove();
+      chartRef.current = null;
+      seriesRef.current = null;
     };
-  }, [
-    data,
-    backgroundColor,
-    lineColor,
-    textColor,
-    areaTopColor,
-    areaBottomColor,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update series data when `data` changes
+  useEffect(() => {
+    if (seriesRef.current) {
+      seriesRef.current.setData(data);
+    }
+  }, [data]);
 
   return <div ref={chartContainerRef} />;
 };
