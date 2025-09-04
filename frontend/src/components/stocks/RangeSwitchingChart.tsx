@@ -9,7 +9,7 @@ const intervals: Map<string, YahooInterval | PolygonInterval> = new Map([
   ["1w", "1wk"],
   ["1m", "1mo"],
   ["3m", "3mo"],
-  ["1y", "1yr"],
+  // Use supported intervals only; a "1y" range would be handled via date windowing
   // ["5y", "5y"],
 ]);
 export const RangeSwitchingChart = () => {

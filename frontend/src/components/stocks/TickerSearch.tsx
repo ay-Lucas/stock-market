@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { SearchResult } from "@shared/types/yahoo";
+import { SearchResult, SearchQuote } from "@shared/types/yahoo";
 
 type TickerSearchProps = {
   onSelect: (symbol: string) => void;
@@ -9,7 +9,7 @@ type TickerSearchProps = {
 
 export default function TickerSearch({ onSelect, placeholder }: TickerSearchProps) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult["quotes"]>([]);
+  const [results, setResults] = useState<SearchQuote[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lastSelected, setLastSelected] = useState<string | null>(null);
