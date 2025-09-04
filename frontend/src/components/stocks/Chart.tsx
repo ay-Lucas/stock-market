@@ -29,8 +29,13 @@ export const Chart: React.FC<ChartComponentProps> = ({
       },
       width: chartContainerRef.current.clientWidth,
       height: 300,
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        barSpacing: 3,
+        minBarSpacing: 0.2,
+      },
     });
-    chart.timeScale().applyOptions({ timeVisible: true, secondsVisible: false });
     const series = chart.addAreaSeries({
       lineColor,
       topColor: areaTopColor,
@@ -61,6 +66,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
   useEffect(() => {
     if (seriesRef.current) {
       seriesRef.current.setData(data);
+      chartRef.current?.timeScale().fitContent();
     }
   }, [data]);
 
