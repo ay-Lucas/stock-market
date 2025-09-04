@@ -2,9 +2,17 @@
 import { ChartComponentProps } from "@/types/chart";
 import { ColorType, createChart, ISeriesApi } from "lightweight-charts";
 import { IChartApi } from "lightweight-charts";
-import { useEffect, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
-export const Chart: React.FC<ChartComponentProps> = ({
+export type ChartHandle = {
+  fitContent: () => void;
+  setVisibleRange: (
+    from: ChartComponentProps["data"][number]["time"],
+    to: ChartComponentProps["data"][number]["time"],
+  ) => void;
+};
+
+export const Chart = forwardRef<ChartHandle, ChartComponentProps>(({ 
   data,
   colors: {
     backgroundColor = "white",
@@ -12,8 +20,7 @@ export const Chart: React.FC<ChartComponentProps> = ({
     textColor = "black",
     areaTopColor = "#2962FF",
     areaBottomColor = "rgba(41, 98, 255, 0.28)",
-  } = {},
-}) => {
+  } = {}}, ref) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
@@ -70,5 +77,16 @@ export const Chart: React.FC<ChartComponentProps> = ({
     }
   }, [data]);
 
+  // Expose imperative API to parent (e.g., for range buttons)
+  useImperativeHandle(
+    ref,
+    () => ({
+      fitContent: () => chartRef.current?.timeScale().fitContent(),
+      setVisibleRange: (from, to) =>
+        chartRef.current?.timeScale().setVisibleRange({ from: from as any, to: to as any }),
+    }),
+    [],
+  );
+
   return <div ref={chartContainerRef} />;
-};
+});

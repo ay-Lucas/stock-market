@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TickerSearch from "@/components/stocks/TickerSearch";
-import { Chart } from "@/components/stocks/Chart";
+import { Chart, ChartHandle } from "@/components/stocks/Chart";
 import { fetchStockData } from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
 
@@ -10,6 +10,7 @@ export default function StockDashboard() {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const chartRef = useRef<ChartHandle>(null);
 
   useEffect(() => {
     const run = async () => {
@@ -18,7 +19,7 @@ export default function StockDashboard() {
         setError(null);
         const now = new Date();
         const from = new Date();
-        from.setFullYear(now.getFullYear() - 20);
+        from.setFullYear(now.getFullYear() - 50);
         const hd = await fetchStockData(ticker, from, now, "1d");
         const formatted = (hd?.results ?? []).map((e) => ({
           time: new Date(e.timestamp).toISOString().slice(0, 10),
@@ -35,11 +36,54 @@ export default function StockDashboard() {
     run();
   }, [ticker]);
 
+  const lastDate = useMemo(
+    () => (data.length ? data[data.length - 1].time : undefined),
+    [data],
+  );
+
+  const setMonthsRange = (months: number) => {
+    if (!lastDate || !chartRef.current) return;
+    const to = new Date(
+      typeof lastDate === "string" ? lastDate : (lastDate as number) * 1000,
+    );
+    const from = new Date(to);
+    from.setMonth(to.getMonth() - months);
+    const fromStr = from.toISOString().slice(0, 10);
+    const toStr = to.toISOString().slice(0, 10);
+    chartRef.current.setVisibleRange(fromStr, toStr);
+  };
+
   return (
     <div className="w-full max-w-4xl flex flex-col items-center gap-6">
       <TickerSearch onSelect={setTicker} />
-      <div className="w-full">
+      <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-gray-800">{ticker}</h2>
+        <div className="flex gap-2 text-black">
+          <button
+            className="bg-gray-200 rounded px-2 py-1"
+            onClick={() => setMonthsRange(6)}
+          >
+            6M
+          </button>
+          <button
+            className="bg-gray-200 rounded px-2 py-1"
+            onClick={() => setMonthsRange(12)}
+          >
+            1Y
+          </button>
+          <button
+            className="bg-gray-200 rounded px-2 py-1"
+            onClick={() => setMonthsRange(60)}
+          >
+            5Y
+          </button>
+          <button
+            className="bg-gray-200 rounded px-2 py-1"
+            onClick={() => chartRef.current?.fitContent()}
+          >
+            Max
+          </button>
+        </div>
       </div>
       {error && <div className="text-red-600">{error}</div>}
       {loading ? (
@@ -47,7 +91,7 @@ export default function StockDashboard() {
       ) : (
         data.length > 0 && (
           <div className="w-full">
-            <Chart data={data} />
+            <Chart ref={chartRef} data={data} />
           </div>
         )
       )}
