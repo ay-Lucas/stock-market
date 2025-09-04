@@ -2,14 +2,12 @@
 import { ChartComponentProps } from "@/types/chart";
 import { ColorType, createChart, ISeriesApi } from "lightweight-charts";
 import { IChartApi } from "lightweight-charts";
+import type { Time } from "lightweight-charts";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 export type ChartHandle = {
   fitContent: () => void;
-  setVisibleRange: (
-    from: ChartComponentProps["data"][number]["time"],
-    to: ChartComponentProps["data"][number]["time"],
-  ) => void;
+  setVisibleRange: (from: Time, to: Time) => void;
 };
 
 export const Chart = forwardRef<ChartHandle, ChartComponentProps>(({ 
@@ -82,11 +80,13 @@ export const Chart = forwardRef<ChartHandle, ChartComponentProps>(({
     ref,
     () => ({
       fitContent: () => chartRef.current?.timeScale().fitContent(),
-      setVisibleRange: (from, to) =>
-        chartRef.current?.timeScale().setVisibleRange({ from: from as any, to: to as any }),
+      setVisibleRange: (from: Time, to: Time) =>
+        chartRef.current?.timeScale().setVisibleRange({ from, to }),
     }),
     [],
   );
 
   return <div ref={chartContainerRef} />;
 });
+
+Chart.displayName = "Chart";
