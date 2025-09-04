@@ -30,15 +30,16 @@ export type YahooScreenerId =
   | "undervalued_growth_stocks"
   | "undervalued_large_caps";
 
-// Re-export the type from Yahoo Finance
-export {
-  SearchResult,
-  ScreenerResult,
-  DailyGainersResult,
-  RecommendationsBySymbolResponseArray,
-  HistoricalDividendsResult,
-  QuoteSummaryResult,
-  InsightsResult,
-  OptionsResult,
-  TrendingSymbolsResult,
-} from "../../backend/src/types/yahoo";
+// Minimal frontend-friendly types to avoid deep imports from yahoo-finance2
+export type SearchQuote = {
+  symbol?: string;
+  shortname?: string;
+  longname?: string;
+  exchDisp?: string;
+  typeDisp?: string;
+};
+
+export type SearchResult = {
+  quotes?: SearchQuote[];
+  // Other fields omitted as they are not used by the frontend
+};
