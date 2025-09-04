@@ -73,31 +73,31 @@ export default function TickerSearch({ onSelect, placeholder }: TickerSearchProp
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl">
+    <div ref={containerRef} className="relative w-full max-w-xl text-black dark:text-gray-100">
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => results.length && setOpen(true)}
         placeholder={placeholder ?? "Search ticker (e.g., AAPL, MSFT)"}
-        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+        className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-black dark:text-gray-100"
       />
       {open && results.length > 0 && (
-        <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-80 overflow-auto">
+        <ul className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-md max-h-80 overflow-auto">
           {results.map((r, idx) => (
             <li
               key={`${r.symbol}-${idx}`}
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-black"
+              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-black dark:text-gray-100"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleSelect(r.symbol!)}
             >
               <span className="font-semibold mr-2">{r.symbol}</span>
-              <span className="text-gray-600">{r.shortname ?? r.longname}</span>
+              <span className="text-gray-600 dark:text-gray-400">{r.shortname ?? r.longname}</span>
             </li>
           ))}
         </ul>
       )}
       {loading && (
-        <div className="absolute right-2 top-2 text-xs text-gray-500">Searching…</div>
+        <div className="absolute right-2 top-2 text-xs text-gray-500 dark:text-gray-400">Searching…</div>
       )}
     </div>
   );

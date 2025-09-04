@@ -76,27 +76,27 @@ export default function StockDashboard() {
       <TickerSearch onSelect={setTicker} />
       <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-gray-800">{ticker}</h2>
-        <div className="flex gap-2 text-black">
+        <div className="flex gap-2 text-black dark:text-gray-100">
           <button
-            className="bg-gray-200 rounded px-2 py-1"
+            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
             onClick={() => setMonthsRange(6)}
           >
             6M
           </button>
           <button
-            className="bg-gray-200 rounded px-2 py-1"
+            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
             onClick={() => setMonthsRange(12)}
           >
             1Y
           </button>
           <button
-            className="bg-gray-200 rounded px-2 py-1"
+            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
             onClick={() => setMonthsRange(60)}
           >
             5Y
           </button>
           <button
-            className="bg-gray-200 rounded px-2 py-1"
+            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
             onClick={() => chartRef.current?.fitContent()}
           >
             Max

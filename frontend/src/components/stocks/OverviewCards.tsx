@@ -65,7 +65,7 @@ export default function OverviewCards({ ticker, quote, summary }: Props) {
   const weekHigh = num(sd.fiftyTwoWeekHigh);
 
   return (
-    <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3 text-black">
+    <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3 text-black dark:text-gray-100">
       <Card title={`${ticker} Price`}>
         <div className="text-xl font-semibold">
           {current != null ? formatCurrency(current) : "–"}
@@ -111,7 +111,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-sm">
       <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">
         {title}
       </div>
