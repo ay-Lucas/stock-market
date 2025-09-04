@@ -26,6 +26,7 @@ export default function StockDashboard() {
         }));
         setData(formatted);
       } catch (e) {
+        console.error(e);
         setError("Failed to load data");
       } finally {
         setLoading(false);
@@ -53,4 +54,3 @@ export default function StockDashboard() {
     </div>
   );
 }
-

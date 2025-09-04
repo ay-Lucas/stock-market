@@ -1,9 +1,7 @@
 "use client";
 import { YahooInterval } from "@shared/types/yahoo";
-import { ChartData } from "@/types/chart";
 import { Chart } from "./Chart";
 import { PolygonInterval } from "@shared/types/polygon";
-import { useState } from "react";
 import { useStockData } from "@/context/StockChart";
 const intervals: Map<string, YahooInterval | PolygonInterval> = new Map([
   ["1h", "hour"],
@@ -14,19 +12,8 @@ const intervals: Map<string, YahooInterval | PolygonInterval> = new Map([
   ["1y", "1yr"],
   // ["5y", "5y"],
 ]);
-export const RangeSwitchingChart = ({
-  data,
-  ticker,
-}: {
-  data: ChartData[];
-  ticker: string;
-}) => {
+export const RangeSwitchingChart = () => {
   const { formattedData, setInterval } = useStockData();
-  // const [chartData, setChartData] = useState<ChartData[]>(data);
-
-  const currentDate = new Date();
-  const from = new Date(currentDate);
-  from.setMonth(currentDate.getMonth() - 10);
 
   return (
     <div>
