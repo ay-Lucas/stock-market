@@ -1,5 +1,7 @@
+import type { UTCTimestamp } from "lightweight-charts";
+
 export type ChartData = {
-  time: string;
+  time: UTCTimestamp | string;
   value: number;
 };
 
