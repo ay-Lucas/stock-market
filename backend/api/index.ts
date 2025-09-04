@@ -1,9 +1,9 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import app from "../src/server";
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+// @ts-ignore
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export default function handler(req: any, res: any) {
   // Let Express handle the request
   // @ts-ignore - Express app is compatible with (req, res)
   return app(req, res);
 }
-
