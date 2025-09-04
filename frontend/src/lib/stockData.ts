@@ -1,9 +1,46 @@
 import { HistoricalData } from "@shared/types/stock";
 
-export const fetchStockData = async (ticker: string) => {
+// Default to Yahoo daily candles over the last ~6 months and proxy via Next.js
+export const fetchStockData = async (
+  ticker: string,
+  from?: Date,
+  to?: Date,
+  interval: string = "1d",
+  multiplier?: number,
+) => {
   try {
+    const fromDate = from ?? new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+    const toDate = to ?? new Date();
+
+    const params = new URLSearchParams({
+      from: fromDate.toISOString(),
+      to: toDate.toISOString(),
+      interval,
+    });
+
+    // If using Polygon intervals, include a multiplier (default 1)
+    const polygonIntervals = [
+      "second",
+      "minute",
+      "hour",
+      "day",
+      "week",
+      "month",
+      "quarter",
+      "year",
+    ];
+    if (polygonIntervals.includes(interval)) {
+      params.set("multiplier", String(multiplier ?? 1));
+    }
+
+    const isServer = typeof window === "undefined";
+    const base = isServer
+      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
+      : ""; // use relative URL in the browser to hit Next.js rewrite
+
     const response = await fetch(
-      `http://localhost:3000/api/stocks/${ticker}/historical?from=2023-01-01&to=2023-12-31&interval=day&multiplier=1`,
+      `${base}/api/stocks/${ticker}/historical?${params.toString()}`,
+      { cache: "no-store" },
     );
     const result: HistoricalData = await response.json();
     return result;
