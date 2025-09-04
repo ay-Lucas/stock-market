@@ -1,4 +1,5 @@
 import { HistoricalData } from "@shared/types/stock";
+import type { StockData } from "@shared/types/stock";
 
 // Default to Yahoo daily candles over the last ~6 months and proxy via Next.js
 export const fetchStockData = async (
@@ -46,5 +47,38 @@ export const fetchStockData = async (
     return result;
   } catch (error) {
     console.error(`There was an error fetching: ${error}`);
+  }
+};
+
+export const fetchQuote = async (ticker: string) => {
+  try {
+    const isServer = typeof window === "undefined";
+    const base = isServer
+      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
+      : "";
+    const res = await fetch(`${base}/api/stocks/${ticker}/quote`, {
+      cache: "no-store",
+    });
+    const result: StockData = await res.json();
+    return result;
+  } catch (error) {
+    console.error(`Error fetching quote for ${ticker}:`, error);
+  }
+};
+
+export const fetchSummary = async (ticker: string) => {
+  try {
+    const isServer = typeof window === "undefined";
+    const base = isServer
+      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
+      : "";
+    const res = await fetch(`${base}/api/stocks/${ticker}/summary`, {
+      cache: "no-store",
+    });
+    // Keep type loose to avoid tying frontend to yahoo-finance internal types
+    const result: any = await res.json();
+    return result;
+  } catch (error) {
+    console.error(`Error fetching summary for ${ticker}:`, error);
   }
 };

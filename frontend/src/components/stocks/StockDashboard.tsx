@@ -2,8 +2,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TickerSearch from "@/components/stocks/TickerSearch";
 import { Chart, ChartHandle } from "@/components/stocks/Chart";
-import { fetchStockData } from "@/lib/stockData";
+import { fetchStockData, fetchQuote, fetchSummary } from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
+import OverviewCards from "@/components/stocks/OverviewCards";
+import type { StockData } from "@shared/types/stock";
 
 export default function StockDashboard() {
   const [ticker, setTicker] = useState<string>("AAPL");
@@ -11,6 +13,8 @@ export default function StockDashboard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const chartRef = useRef<ChartHandle>(null);
+  const [quote, setQuote] = useState<StockData | undefined>(undefined);
+  const [summary, setSummary] = useState<any>(undefined);
 
   useEffect(() => {
     const run = async () => {
@@ -26,6 +30,13 @@ export default function StockDashboard() {
           value: e.close!,
         }));
         setData(formatted);
+        // Fetch overview data in parallel (after kick-off)
+        fetchQuote(ticker)
+          .then(setQuote)
+          .catch(() => setQuote(undefined));
+        fetchSummary(ticker)
+          .then(setSummary)
+          .catch(() => setSummary(undefined));
       } catch (e) {
         console.error(e);
         setError("Failed to load data");
@@ -48,6 +59,10 @@ export default function StockDashboard() {
     );
     const from = new Date(to);
     from.setMonth(to.getMonth() - months);
+    // const fromTs = Math.floor(from.getTime() / 1000).toString();
+    // const toTs = Math.floor(to.getTime() / 1000).toString();
+    // chartRef.current.setVisibleRange(fromTs, toTs);
+
     const fromStr = from.toISOString().slice(0, 10);
     const toStr = to.toISOString().slice(0, 10);
     chartRef.current.setVisibleRange(fromStr, toStr);
@@ -95,6 +110,7 @@ export default function StockDashboard() {
           </div>
         )
       )}
+      <OverviewCards ticker={ticker} quote={quote} summary={summary} />
     </div>
   );
 }
