@@ -1,10 +1,14 @@
 "use client";
 import type { StockData } from "@shared/types/stock";
+import type {
+  QuoteSummaryMinimal,
+  MaybeRawNumber,
+} from "@shared/types/yahoo";
 
 type Props = {
   ticker: string;
   quote?: StockData;
-  summary?: any;
+  summary?: QuoteSummaryMinimal;
 };
 
 const formatCurrency = (n?: number) =>
@@ -35,21 +39,30 @@ export default function OverviewCards({ ticker, quote, summary }: Props) {
   const changePct =
     current != null && prevClose ? (change! / prevClose) * 100 : null;
 
+  // Helpers to safely extract numbers
+  const num = (v?: MaybeRawNumber) =>
+    typeof v === "number" ? v : v?.raw ?? undefined;
+
   // Yahoo summaryDetail fields (best-effort; optional)
-  const sd =
-    summary?.quoteSummary?.result?.[0]?.summaryDetail ??
-    summary?.summaryDetail ??
-    {};
-  const mc = sd.marketCap?.raw ?? sd.marketCap ?? undefined;
-  const pe = sd.trailingPE?.raw ?? sd.trailingPE ?? undefined;
-  const eps =
-    summary?.quoteSummary?.result?.[0]?.defaultKeyStatistics?.trailingEps
-      ?.raw ??
-    summary?.defaultKeyStatistics?.trailingEps ??
-    undefined;
-  const dy = (sd.dividendYield?.raw ?? sd.dividendYield ?? undefined) * 100;
-  const weekLow = sd.fiftyTwoWeekLow?.raw ?? sd.fiftyTwoWeekLow ?? undefined;
-  const weekHigh = sd.fiftyTwoWeekHigh?.raw ?? sd.fiftyTwoWeekHigh ?? undefined;
+  type SummaryDetailLike = {
+    marketCap?: MaybeRawNumber;
+    trailingPE?: MaybeRawNumber;
+    dividendYield?: MaybeRawNumber;
+    fiftyTwoWeekLow?: MaybeRawNumber;
+    fiftyTwoWeekHigh?: MaybeRawNumber;
+  };
+  type DefaultKeyStatisticsLike = { trailingEps?: MaybeRawNumber };
+
+  const root = summary?.quoteSummary?.result?.[0] ?? summary;
+  const sd = (root?.summaryDetail ?? {}) as SummaryDetailLike;
+  const dks = (root?.defaultKeyStatistics ?? {}) as DefaultKeyStatisticsLike;
+
+  const mc = num(sd.marketCap);
+  const pe = num(sd.trailingPE);
+  const eps = num(dks.trailingEps);
+  const dy = (num(sd.dividendYield) ?? NaN) * 100;
+  const weekLow = num(sd.fiftyTwoWeekLow);
+  const weekHigh = num(sd.fiftyTwoWeekHigh);
 
   return (
     <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3 text-black">

@@ -43,3 +43,30 @@ export type SearchResult = {
   quotes?: SearchQuote[];
   // Other fields omitted as they are not used by the frontend
 };
+
+// Minimal shapes for quoteSummary used by the frontend overview cards
+export type MaybeRawNumber = number | { raw?: number } | null | undefined;
+
+export type SummaryDetailMinimal = {
+  marketCap?: MaybeRawNumber;
+  trailingPE?: MaybeRawNumber;
+  dividendYield?: MaybeRawNumber; // typically a fraction (e.g., 0.0123)
+  fiftyTwoWeekLow?: MaybeRawNumber;
+  fiftyTwoWeekHigh?: MaybeRawNumber;
+};
+
+export type DefaultKeyStatisticsMinimal = {
+  trailingEps?: MaybeRawNumber;
+};
+
+export type QuoteSummaryMinimal = {
+  quoteSummary?: {
+    result?: Array<{
+      summaryDetail?: SummaryDetailMinimal;
+      defaultKeyStatistics?: DefaultKeyStatisticsMinimal;
+    }>;
+  };
+  // Some responses may surface fields at the root
+  summaryDetail?: SummaryDetailMinimal;
+  defaultKeyStatistics?: DefaultKeyStatisticsMinimal;
+};

@@ -6,6 +6,7 @@ import { fetchStockData, fetchQuote, fetchSummary } from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
 import OverviewCards from "@/components/stocks/OverviewCards";
 import type { StockData } from "@shared/types/stock";
+import type { QuoteSummaryMinimal } from "@shared/types/yahoo";
 
 export default function StockDashboard() {
   const [ticker, setTicker] = useState<string>("AAPL");
@@ -14,7 +15,9 @@ export default function StockDashboard() {
   const [error, setError] = useState<string | null>(null);
   const chartRef = useRef<ChartHandle>(null);
   const [quote, setQuote] = useState<StockData | undefined>(undefined);
-  const [summary, setSummary] = useState<any>(undefined);
+  const [summary, setSummary] = useState<QuoteSummaryMinimal | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const run = async () => {

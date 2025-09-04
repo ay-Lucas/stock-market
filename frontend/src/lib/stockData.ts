@@ -1,4 +1,5 @@
 import { HistoricalData } from "@shared/types/stock";
+import type { QuoteSummaryMinimal } from "@shared/types/yahoo";
 import type { StockData } from "@shared/types/stock";
 
 // Default to Yahoo daily candles over the last ~6 months and proxy via Next.js
@@ -66,7 +67,7 @@ export const fetchQuote = async (ticker: string) => {
   }
 };
 
-export const fetchSummary = async (ticker: string) => {
+export const fetchSummary = async (ticker: string): Promise<QuoteSummaryMinimal | undefined> => {
   try {
     const isServer = typeof window === "undefined";
     const base = isServer
@@ -75,8 +76,7 @@ export const fetchSummary = async (ticker: string) => {
     const res = await fetch(`${base}/api/stocks/${ticker}/summary`, {
       cache: "no-store",
     });
-    // Keep type loose to avoid tying frontend to yahoo-finance internal types
-    const result: any = await res.json();
+    const result: QuoteSummaryMinimal = await res.json();
     return result;
   } catch (error) {
     console.error(`Error fetching summary for ${ticker}:`, error);
