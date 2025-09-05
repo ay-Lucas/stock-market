@@ -19,10 +19,10 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Only start a server when not running on Vercel serverless
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Express server running on http://localhost:${PORT}`);
-  });
-}
+// if (!process.env.VERCEL) {
+app.listen(PORT, () => {
+  console.log(`Express server running on http://localhost:${PORT}`);
+});
+// }
 
 export default app;
