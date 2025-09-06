@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import TickerSearch from "@/components/stocks/TickerSearch";
 import { Chart, ChartHandle } from "@/components/stocks/Chart";
 import { fetchStockData, fetchQuote, fetchSummary, fetchNews, type NewsItem } from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
@@ -93,7 +92,6 @@ export default function StockDashboard({
 
   return (
     <div className="w-full max-w-4xl flex flex-col items-center gap-6">
-      <TickerSearch onSelect={setTicker} />
       <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
           {ticker}

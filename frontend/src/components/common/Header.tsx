@@ -3,18 +3,28 @@ import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import TickerSearch from "@/components/stocks/TickerSearch";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const router = useRouter();
+  const handleSelect = (symbol: string) => {
+    const s = symbol.toUpperCase();
+    router.push(`/${s}`);
+  };
   return (
     <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky text-gray-800 dark:text-gray-100">
       <div className="container mx-auto flex items-center justify-between py-4 px-6 sm:px-12">
         <div className="text-2xl font-bold">
           <Link href="/">Stock-Matic</Link>
         </div>
-        <nav className="flex gap-4 items-center">
+        <nav className="flex gap-4 items-center w-full max-w-3xl">
+          <div className="hidden sm:block flex-1">
+            <TickerSearch onSelect={handleSelect} placeholder="Search ticker (e.g., AAPL, MSFT)" />
+          </div>
           <Link
             href="/stocks"
             className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
