@@ -1,7 +1,13 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chart, ChartHandle } from "@/components/stocks/Chart";
-import { fetchStockData, fetchQuote, fetchSummary, fetchNews, type NewsItem } from "@/lib/stockData";
+import {
+  fetchStockData,
+  fetchQuote,
+  fetchSummary,
+  fetchNews,
+  type NewsItem,
+} from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
 import OverviewCards from "@/components/stocks/OverviewCards";
 import type { StockData } from "@shared/types/stock";
@@ -21,7 +27,7 @@ export default function StockDashboard({
   initialSummary?: QuoteSummaryMinimal;
   initialNews?: NewsItem[];
 }) {
-  const [ticker, setTicker] = useState<string>(initialTicker);
+  const [ticker] = useState<string>(initialTicker);
   const [data, setData] = useState<ChartData[]>(initialData);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,7 +141,9 @@ export default function StockDashboard({
       )}
       <OverviewCards ticker={ticker} quote={quote} summary={summary} />
       <div className="w-full">
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Latest News</h3>
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          Latest News
+        </h3>
       </div>
       <NewsList items={news} />
     </div>

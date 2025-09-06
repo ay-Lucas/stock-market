@@ -11,9 +11,9 @@ export const revalidate = 60;
 export default async function TickerPage({
   params,
 }: {
-  params: { ticker: string };
+  params: Promise<{ ticker: string }>;
 }) {
-  const ticker = params.ticker?.toUpperCase() || "AAPL";
+  const ticker = (await params).ticker?.toUpperCase() || "AAPL";
   const now = new Date();
   const from = new Date();
   from.setFullYear(now.getFullYear() - 50);
