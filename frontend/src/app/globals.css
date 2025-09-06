@@ -7,13 +7,22 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+/* System preference fallback for first paint when no cookie is set */
+/* @media (prefers-color-scheme: dark) { */
+
+[data-theme="dark"] {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
 
+/* Explicit theme override via html.dark class (takes precedence after hydration) */
+/* .dark { */
+/*   --background: #0a0a0a; */
+/*   --foreground: #ededed; */
+/* } */
+/**/
 body {
   color: var(--foreground);
   background: var(--background);

@@ -88,7 +88,9 @@ export default function StockDashboard({
     <div className="w-full max-w-4xl flex flex-col items-center gap-6">
       <TickerSearch onSelect={setTicker} />
       <div className="w-full flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-800">{ticker}</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+          {ticker}
+        </h2>
         <div className="flex gap-2 text-black dark:text-gray-100">
           <button
             className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
