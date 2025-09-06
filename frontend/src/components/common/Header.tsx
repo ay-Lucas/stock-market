@@ -16,26 +16,25 @@ export default function Header() {
     router.push(`/${s}`);
   };
   return (
-    <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky text-gray-800 dark:text-gray-100">
-      <div className="container mx-auto flex items-center justify-between py-4 px-6 sm:px-12">
-        <div className="text-2xl font-bold">
+    <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 text-gray-800 dark:text-gray-100">
+      <div className="container mx-auto flex items-center justify-between py-4 px-6 sm:px-12 w-full">
+        <div className="text-2xl font-bold whitespace-nowrap">
           <Link href="/">Stock-Matic</Link>
         </div>
-        <nav className="flex gap-4 items-center w-full max-w-3xl">
-          <div className="hidden sm:block flex-1">
-            <TickerSearch onSelect={handleSelect} placeholder="Search ticker (e.g., AAPL, MSFT)" />
+        <div className="flex gap-4 items-center w-full">
+          <div className="hidden sm:flex flex-1 items-center justify-center">
+            <TickerSearch
+              onSelect={handleSelect}
+              placeholder="Search ticker (e.g., AAPL, MSFT)"
+            />
           </div>
+        </div>
+        <nav className="flex gap-4 items-center">
           <Link
             href="/stocks"
             className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
             Stocks
-          </Link>
-          <Link
-            href="/crypto"
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-          >
-            Crypto
           </Link>
           <Link
             href="/news"
@@ -47,8 +46,20 @@ export default function Header() {
             onClick={() =>
               setTheme(resolvedTheme === "dark" ? "light" : "dark")
             }
-            aria-label={mounted ? (resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
-            title={mounted ? (resolvedTheme === "dark" ? "Light mode" : "Dark mode") : "Toggle theme"}
+            aria-label={
+              mounted
+                ? resolvedTheme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+                : "Toggle theme"
+            }
+            title={
+              mounted
+                ? resolvedTheme === "dark"
+                  ? "Light mode"
+                  : "Dark mode"
+                : "Toggle theme"
+            }
             className="ml-2 inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-700 p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             {mounted ? (

@@ -7,7 +7,10 @@ type TickerSearchProps = {
   placeholder?: string;
 };
 
-export default function TickerSearch({ onSelect, placeholder }: TickerSearchProps) {
+export default function TickerSearch({
+  onSelect,
+  placeholder,
+}: TickerSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchQuote[]>([]);
   const [open, setOpen] = useState(false);
@@ -25,14 +28,19 @@ export default function TickerSearch({ onSelect, placeholder }: TickerSearchProp
       }
 
       // If the user just selected this exact ticker, don't reopen suggestions
-      if (lastSelected && debouncedQuery.toUpperCase() === lastSelected.toUpperCase()) {
+      if (
+        lastSelected &&
+        debouncedQuery.toUpperCase() === lastSelected.toUpperCase()
+      ) {
         setResults([]);
         setOpen(false);
         return;
       }
       try {
         setLoading(true);
-        const res = await fetch(`/api/stocks/search?q=${encodeURIComponent(debouncedQuery)}`);
+        const res = await fetch(
+          `/api/stocks/search?q=${encodeURIComponent(debouncedQuery)}`,
+        );
         const data: SearchResult = await res.json();
         setResults(data.quotes?.slice(0, 8) ?? []);
         setOpen(true);
@@ -73,7 +81,10 @@ export default function TickerSearch({ onSelect, placeholder }: TickerSearchProp
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl text-black dark:text-gray-100">
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-xl text-black dark:text-gray-100"
+    >
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -91,13 +102,17 @@ export default function TickerSearch({ onSelect, placeholder }: TickerSearchProp
               onClick={() => handleSelect(r.symbol!)}
             >
               <span className="font-semibold mr-2">{r.symbol}</span>
-              <span className="text-gray-600 dark:text-gray-400">{r.shortname ?? r.longname}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                {r.shortname ?? r.longname}
+              </span>
             </li>
           ))}
         </ul>
       )}
       {loading && (
-        <div className="absolute right-2 top-2 text-xs text-gray-500 dark:text-gray-400">Searching…</div>
+        <div className="absolute right-2 top-2 text-xs text-gray-500 dark:text-gray-400">
+          Searching…
+        </div>
       )}
     </div>
   );
