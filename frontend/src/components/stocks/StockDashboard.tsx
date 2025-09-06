@@ -2,22 +2,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TickerSearch from "@/components/stocks/TickerSearch";
 import { Chart, ChartHandle } from "@/components/stocks/Chart";
-import { fetchStockData, fetchQuote, fetchSummary } from "@/lib/stockData";
+import { fetchStockData, fetchQuote, fetchSummary, fetchNews, type NewsItem } from "@/lib/stockData";
 import { ChartData } from "@/types/chart";
 import OverviewCards from "@/components/stocks/OverviewCards";
 import type { StockData } from "@shared/types/stock";
 import type { QuoteSummaryMinimal } from "@shared/types/yahoo";
+import NewsList from "@/components/stocks/NewsList";
 
 export default function StockDashboard({
   initialTicker = "AAPL",
   initialData = [],
   initialQuote,
   initialSummary,
+  initialNews = [],
 }: {
   initialTicker?: string;
   initialData?: ChartData[];
   initialQuote?: StockData;
   initialSummary?: QuoteSummaryMinimal;
+  initialNews?: NewsItem[];
 }) {
   const [ticker, setTicker] = useState<string>(initialTicker);
   const [data, setData] = useState<ChartData[]>(initialData);
@@ -28,6 +31,7 @@ export default function StockDashboard({
   const [summary, setSummary] = useState<QuoteSummaryMinimal | undefined>(
     initialSummary,
   );
+  const [news, setNews] = useState<NewsItem[]>(initialNews);
 
   useEffect(() => {
     const run = async () => {
@@ -52,6 +56,9 @@ export default function StockDashboard({
         fetchSummary(ticker)
           .then(setSummary)
           .catch(() => setSummary(undefined));
+        fetchNews(ticker)
+          .then((n) => setNews(n ?? []))
+          .catch(() => setNews([]));
       } catch (e) {
         console.error(e);
         setError("Failed to load data");
@@ -129,6 +136,10 @@ export default function StockDashboard({
         )
       )}
       <OverviewCards ticker={ticker} quote={quote} summary={summary} />
+      <div className="w-full">
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Latest News</h3>
+      </div>
+      <NewsList items={news} />
     </div>
   );
 }

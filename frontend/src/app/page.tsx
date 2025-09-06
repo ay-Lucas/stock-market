@@ -1,5 +1,5 @@
 import StockDashboard from "@/components/stocks/StockDashboard";
-import { fetchStockData, fetchQuote, fetchSummary } from "@/lib/stockData";
+import { fetchStockData, fetchQuote, fetchSummary, fetchNews } from "@/lib/stockData";
 
 export const revalidate = 60; // ISR: rebuild page data every 60s per ticker
 
@@ -20,10 +20,11 @@ export default async function Home({
   const from = new Date();
   from.setFullYear(now.getFullYear() - 20);
 
-  const [historical, quote, summary] = await Promise.all([
+  const [historical, quote, summary, news] = await Promise.all([
     fetchStockData(ticker, from, now, "1d", undefined, { revalidate: 60 }),
     fetchQuote(ticker, { revalidate: 30 }),
     fetchSummary(ticker, { revalidate: 300 }),
+    fetchNews(ticker, { revalidate: 300 }),
   ]);
 
   const initialData =
@@ -40,6 +41,7 @@ export default async function Home({
           initialData={initialData}
           initialQuote={quote}
           initialSummary={summary}
+          initialNews={news ?? []}
         />
       </main>
     </div>

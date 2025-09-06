@@ -108,3 +108,38 @@ export async function fetchSummary(
     console.error(`Error fetching summary for ${ticker}:`, error);
   }
 }
+
+// News
+export type NewsItem = {
+  uuid: string;
+  title: string;
+  publisher: string;
+  link: string;
+  providerPublishTime: Date | number | string;
+  type: string;
+  thumbnail?: {
+    resolutions: Array<{
+      url: string;
+      width: number;
+      height: number;
+      tag: string;
+    }>;
+  };
+  relatedTickers?: string[];
+};
+export type NewsResponse = NewsItem[];
+
+export async function fetchNews(
+  ticker: string,
+  opts: FetchISROptions = {},
+): Promise<NewsResponse | undefined> {
+  try {
+    return await fetchJSON<NewsResponse>(
+      `/api/stocks/${ticker}/news`,
+      opts.revalidate ?? 300,
+      opts,
+    );
+  } catch (error) {
+    console.error(`Error fetching news for ${ticker}:`, error);
+  }
+}
