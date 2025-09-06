@@ -2,14 +2,61 @@ import { HistoricalData } from "@shared/types/stock";
 import type { QuoteSummaryMinimal } from "@shared/types/yahoo";
 import type { StockData } from "@shared/types/stock";
 
-// Default to Yahoo daily candles over the last ~6 months and proxy via Next.js
-export const fetchStockData = async (
+// Options for ISR/caching; on the server we use Next fetch revalidate, on the client cache.
+export type FetchISROptions = {
+  revalidate?: number; // seconds for ISR when on server
+  tags?: string[];
+  cache?: RequestCache; // browser override: 'no-store' | 'force-cache'
+};
+
+const isServerSide = () => typeof window === "undefined";
+
+const getApiBase = () =>
+  isServerSide()
+    ? (process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000")
+    : "";
+
+async function fetchJSON<T>(
+  pathWithQuery: string,
+  defaultRevalidate: number,
+  opts: FetchISROptions = {},
+): Promise<T> {
+  const base = getApiBase();
+  const server = isServerSide();
+  const requestInit: RequestInit & {
+    next?: { revalidate?: number; tags?: string[] };
+  } = server
+    ? {
+        next: {
+          revalidate: opts.revalidate ?? defaultRevalidate,
+          tags: opts.tags,
+        },
+      }
+    : { cache: opts.cache ?? "no-store" };
+  const res = await fetch(`${base}${pathWithQuery}`, requestInit);
+  return (await res.json()) as T;
+}
+
+const POLYGON_INTERVALS: readonly string[] = [
+  "second",
+  "minute",
+  "hour",
+  "day",
+  "week",
+  "month",
+  "quarter",
+  "year",
+];
+
+// Historical OHLCV
+export async function fetchStockData(
   ticker: string,
   from?: Date,
   to?: Date,
   interval: string = "1d",
   multiplier?: number,
-) => {
+  opts: FetchISROptions = {},
+) {
   try {
     const fromDate = from ?? new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
     const toDate = to ?? new Date();
@@ -19,66 +66,45 @@ export const fetchStockData = async (
       to: toDate.toISOString(),
       interval,
     });
-
-    // If using Polygon intervals, include a multiplier (default 1)
-    const polygonIntervals = [
-      "second",
-      "minute",
-      "hour",
-      "day",
-      "week",
-      "month",
-      "quarter",
-      "year",
-    ];
-    if (polygonIntervals.includes(interval)) {
+    if (POLYGON_INTERVALS.includes(interval)) {
       params.set("multiplier", String(multiplier ?? 1));
     }
 
-    const isServer = typeof window === "undefined";
-    const base = isServer
-      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
-      : ""; // use relative URL in the browser to hit Next.js rewrite
-
-    const response = await fetch(
-      `${base}/api/stocks/${ticker}/historical?${params.toString()}`,
-      { cache: "no-store" },
+    return await fetchJSON<HistoricalData>(
+      `/api/stocks/${ticker}/historical?${params.toString()}`,
+      opts.revalidate ?? 60,
+      opts,
     );
-    const result: HistoricalData = await response.json();
-    return result;
   } catch (error) {
     console.error(`There was an error fetching: ${error}`);
   }
-};
+}
 
-export const fetchQuote = async (ticker: string) => {
+// Quote
+export async function fetchQuote(ticker: string, opts: FetchISROptions = {}) {
   try {
-    const isServer = typeof window === "undefined";
-    const base = isServer
-      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
-      : "";
-    const res = await fetch(`${base}/api/stocks/${ticker}/quote`, {
-      cache: "no-store",
-    });
-    const result: StockData = await res.json();
-    return result;
+    return await fetchJSON<StockData>(
+      `/api/stocks/${ticker}/quote`,
+      opts.revalidate ?? 30,
+      opts,
+    );
   } catch (error) {
     console.error(`Error fetching quote for ${ticker}:`, error);
   }
-};
+}
 
-export const fetchSummary = async (ticker: string): Promise<QuoteSummaryMinimal | undefined> => {
+// Summary (profile/detail/statistics)
+export async function fetchSummary(
+  ticker: string,
+  opts: FetchISROptions = {},
+): Promise<QuoteSummaryMinimal | undefined> {
   try {
-    const isServer = typeof window === "undefined";
-    const base = isServer
-      ? process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000"
-      : "";
-    const res = await fetch(`${base}/api/stocks/${ticker}/summary`, {
-      cache: "no-store",
-    });
-    const result: QuoteSummaryMinimal = await res.json();
-    return result;
+    return await fetchJSON<QuoteSummaryMinimal>(
+      `/api/stocks/${ticker}/summary`,
+      opts.revalidate ?? 300,
+      opts,
+    );
   } catch (error) {
     console.error(`Error fetching summary for ${ticker}:`, error);
   }
-};
+}
