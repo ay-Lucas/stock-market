@@ -8,20 +8,32 @@ import OverviewCards from "@/components/stocks/OverviewCards";
 import type { StockData } from "@shared/types/stock";
 import type { QuoteSummaryMinimal } from "@shared/types/yahoo";
 
-export default function StockDashboard() {
-  const [ticker, setTicker] = useState<string>("AAPL");
-  const [data, setData] = useState<ChartData[]>([]);
+export default function StockDashboard({
+  initialTicker = "AAPL",
+  initialData = [],
+  initialQuote,
+  initialSummary,
+}: {
+  initialTicker?: string;
+  initialData?: ChartData[];
+  initialQuote?: StockData;
+  initialSummary?: QuoteSummaryMinimal;
+}) {
+  const [ticker, setTicker] = useState<string>(initialTicker);
+  const [data, setData] = useState<ChartData[]>(initialData);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const chartRef = useRef<ChartHandle>(null);
-  const [quote, setQuote] = useState<StockData | undefined>(undefined);
+  const [quote, setQuote] = useState<StockData | undefined>(initialQuote);
   const [summary, setSummary] = useState<QuoteSummaryMinimal | undefined>(
-    undefined,
+    initialSummary,
   );
 
   useEffect(() => {
     const run = async () => {
       try {
+        // If we already have initial data for the initial ticker, skip first fetch
+        if (data.length && ticker === initialTicker) return;
         setLoading(true);
         setError(null);
         const now = new Date();
@@ -48,6 +60,7 @@ export default function StockDashboard() {
       }
     };
     run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
 
   const lastDate = useMemo(
