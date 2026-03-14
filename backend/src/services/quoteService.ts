@@ -36,6 +36,7 @@ export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
   const uppercaseSymbol = symbol.toUpperCase();
   const now = Date.now();
   const cached = quoteCache.get(uppercaseSymbol);
+  let polygonSnapshotUnauthorized = false;
   if (cached && now - cached.timestamp < QUOTE_CACHE_TTL_MS) {
     return cached.data;
   }
@@ -53,10 +54,7 @@ export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
       polygonMessage.toLowerCase().includes("not_authorized") ||
       polygonMessage.toLowerCase().includes("not entitled")
     ) {
-      if (cached) {
-        return cached.data;
-      }
-      throw polygonError;
+      polygonSnapshotUnauthorized = true;
     }
   }
 
@@ -71,27 +69,29 @@ export const fetchStockQuote = async (symbol: string): Promise<StockData> => {
     );
   }
 
-  try {
-    const to = new Date();
-    const from = new Date(to);
-    from.setDate(to.getDate() - 10);
-    const aggregateResponse = await fetchPolygonHistoricalData(
-      uppercaseSymbol,
-      from.toISOString(),
-      to.toISOString(),
-      "day",
-      1,
-    );
-    const quote = buildQuoteFromPolygonBars(
-      uppercaseSymbol,
-      aggregateResponse.results,
-    );
-    quoteCache.set(uppercaseSymbol, { timestamp: now, data: quote });
-    return quote;
-  } catch (aggregateError) {
-    console.error(
-      `Error fetching quote from Polygon aggregates: ${(aggregateError as Error).message}`,
-    );
+  if (!polygonSnapshotUnauthorized) {
+    try {
+      const to = new Date();
+      const from = new Date(to);
+      from.setDate(to.getDate() - 10);
+      const aggregateResponse = await fetchPolygonHistoricalData(
+        uppercaseSymbol,
+        from.toISOString(),
+        to.toISOString(),
+        "day",
+        1,
+      );
+      const quote = buildQuoteFromPolygonBars(
+        uppercaseSymbol,
+        aggregateResponse.results,
+      );
+      quoteCache.set(uppercaseSymbol, { timestamp: now, data: quote });
+      return quote;
+    } catch (aggregateError) {
+      console.error(
+        `Error fetching quote from Polygon aggregates: ${(aggregateError as Error).message}`,
+      );
+    }
   }
 
   if (cached) {
