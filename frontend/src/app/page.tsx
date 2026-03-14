@@ -13,6 +13,19 @@ import {
 export const revalidate = 60;
 
 const INDEX_PROXIES = ["SPY", "QQQ", "DIA", "IWM"];
+const SECTOR_ETFS = [
+  { symbol: "XLB", name: "Materials" },
+  { symbol: "XLC", name: "Communication Services" },
+  { symbol: "XLE", name: "Energy" },
+  { symbol: "XLF", name: "Financials" },
+  { symbol: "XLI", name: "Industrials" },
+  { symbol: "XLK", name: "Technology" },
+  { symbol: "XLP", name: "Consumer Staples" },
+  { symbol: "XLRE", name: "Real Estate" },
+  { symbol: "XLU", name: "Utilities" },
+  { symbol: "XLV", name: "Health Care" },
+  { symbol: "XLY", name: "Consumer Discretionary" },
+];
 
 const formatCurrency = (value?: number) =>
   value == null
@@ -45,6 +58,19 @@ const computeChangePct = (current?: number, prevClose?: number) => {
     return undefined;
   }
   return ((current - prevClose) / prevClose) * 100;
+};
+
+const getHeatTileClass = (pct?: number) => {
+  if (typeof pct !== "number" || !Number.isFinite(pct)) {
+    return "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
+  }
+  if (pct >= 2.5) return "bg-green-600/25 border-green-500/40";
+  if (pct >= 1) return "bg-green-500/20 border-green-500/30";
+  if (pct > 0) return "bg-green-500/10 border-green-500/20";
+  if (pct <= -2.5) return "bg-red-600/25 border-red-500/40";
+  if (pct <= -1) return "bg-red-500/20 border-red-500/30";
+  if (pct < 0) return "bg-red-500/10 border-red-500/20";
+  return "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
 };
 
 function MoversList({
@@ -94,8 +120,9 @@ function MoversList({
 }
 
 export default async function Home() {
-  const [indexQuotes, gainers, losers, trending, news] = await Promise.all([
+  const [indexQuotes, sectorQuotes, gainers, losers, trending, news] = await Promise.all([
     Promise.all(INDEX_PROXIES.map((symbol) => fetchQuote(symbol, { revalidate: 30 }))),
+    Promise.all(SECTOR_ETFS.map((item) => fetchQuote(item.symbol, { revalidate: 30 }))),
     fetchScreener("day_gainers", 8, { revalidate: 120 }),
     fetchScreener("day_losers", 8, { revalidate: 120 }),
     fetchTrending("US", 10, { revalidate: 120 }),
@@ -148,6 +175,41 @@ export default async function Home() {
         <section className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <MoversList title="Top Gainers" items={gainers?.quotes ?? []} />
           <MoversList title="Top Losers" items={losers?.quotes ?? []} />
+        </section>
+
+        <section className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sector Heatmap</h2>
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {SECTOR_ETFS.map((sector, idx) => {
+              const quote = sectorQuotes[idx];
+              const pct = computeChangePct(quote?.currentPrice, quote?.previousClose);
+              const up = typeof pct === "number" && pct >= 0;
+              return (
+                <Link
+                  key={`sector-${sector.symbol}`}
+                  href={`/${sector.symbol}`}
+                  className={`rounded-lg border p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400/60 dark:hover:border-slate-500/60 ${getHeatTileClass(pct)}`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-base font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                        {sector.name}
+                      </div>
+                      <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                        {sector.symbol}
+                      </div>
+                    </div>
+                    <div className={`text-xs font-medium ${up ? "text-green-700" : "text-red-700"}`}>
+                      {typeof pct === "number" ? `${up ? "+" : ""}${pct.toFixed(2)}%` : "–"}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-800 dark:text-gray-100">
+                    {formatCurrency(quote?.currentPrice)}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </section>
 
         <section className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
