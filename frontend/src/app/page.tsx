@@ -1,9 +1,13 @@
 import Link from "next/link";
 import HomeTickerSearch from "@/components/stocks/HomeTickerSearch";
 import NewsList from "@/components/stocks/NewsList";
+import SectorHeatmap, {
+  type SectorHeatmapItem,
+} from "@/components/stocks/SectorHeatmap";
 import {
   fetchNews,
   fetchQuote,
+  fetchStockData,
   fetchScreener,
   fetchTrending,
   type NewsItem,
@@ -13,18 +17,23 @@ import {
 export const revalidate = 60;
 
 const INDEX_PROXIES = ["SPY", "QQQ", "DIA", "IWM"];
-const SECTOR_ETFS = [
-  { symbol: "XLB", name: "Materials" },
-  { symbol: "XLC", name: "Communication Services" },
-  { symbol: "XLE", name: "Energy" },
-  { symbol: "XLF", name: "Financials" },
-  { symbol: "XLI", name: "Industrials" },
-  { symbol: "XLK", name: "Technology" },
-  { symbol: "XLP", name: "Consumer Staples" },
-  { symbol: "XLRE", name: "Real Estate" },
-  { symbol: "XLU", name: "Utilities" },
-  { symbol: "XLV", name: "Health Care" },
-  { symbol: "XLY", name: "Consumer Discretionary" },
+const SECTOR_ETFS: Array<{
+  symbol: string;
+  name: string;
+  category: "defensive" | "cyclical";
+  sizeWeight: number;
+}> = [
+  { symbol: "XLB", name: "Materials", category: "cyclical", sizeWeight: 2.5 },
+  { symbol: "XLC", name: "Communication Services", category: "cyclical", sizeWeight: 8.5 },
+  { symbol: "XLE", name: "Energy", category: "cyclical", sizeWeight: 4 },
+  { symbol: "XLF", name: "Financials", category: "cyclical", sizeWeight: 10.5 },
+  { symbol: "XLI", name: "Industrials", category: "cyclical", sizeWeight: 8.5 },
+  { symbol: "XLK", name: "Technology", category: "cyclical", sizeWeight: 30 },
+  { symbol: "XLP", name: "Consumer Staples", category: "defensive", sizeWeight: 5.5 },
+  { symbol: "XLRE", name: "Real Estate", category: "defensive", sizeWeight: 2.5 },
+  { symbol: "XLU", name: "Utilities", category: "defensive", sizeWeight: 2.5 },
+  { symbol: "XLV", name: "Health Care", category: "defensive", sizeWeight: 11 },
+  { symbol: "XLY", name: "Consumer Discretionary", category: "cyclical", sizeWeight: 10 },
 ];
 
 const formatCurrency = (value?: number) =>
@@ -58,19 +67,6 @@ const computeChangePct = (current?: number, prevClose?: number) => {
     return undefined;
   }
   return ((current - prevClose) / prevClose) * 100;
-};
-
-const getHeatTileClass = (pct?: number) => {
-  if (typeof pct !== "number" || !Number.isFinite(pct)) {
-    return "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
-  }
-  if (pct >= 2.5) return "bg-green-600/25 border-green-500/40";
-  if (pct >= 1) return "bg-green-500/20 border-green-500/30";
-  if (pct > 0) return "bg-green-500/10 border-green-500/20";
-  if (pct <= -2.5) return "bg-red-600/25 border-red-500/40";
-  if (pct <= -1) return "bg-red-500/20 border-red-500/30";
-  if (pct < 0) return "bg-red-500/10 border-red-500/20";
-  return "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
 };
 
 function MoversList({
@@ -120,9 +116,76 @@ function MoversList({
 }
 
 export default async function Home() {
-  const [indexQuotes, sectorQuotes, gainers, losers, trending, news] = await Promise.all([
+  const [indexQuotes, sectorSnapshots, gainers, losers, trending, news] = await Promise.all([
     Promise.all(INDEX_PROXIES.map((symbol) => fetchQuote(symbol, { revalidate: 30 }))),
-    Promise.all(SECTOR_ETFS.map((item) => fetchQuote(item.symbol, { revalidate: 30 }))),
+    Promise.all(
+      SECTOR_ETFS.map(async (item) => {
+        const quote = await fetchQuote(item.symbol, { revalidate: 30 });
+        const to = new Date();
+        const from = new Date();
+        from.setDate(to.getDate() - 45);
+        const historical = await fetchStockData(item.symbol, from, to, "1d", undefined, {
+          revalidate: 300,
+        });
+        const points = [...(historical?.results ?? [])]
+          .sort((a, b) => a.timestamp - b.timestamp)
+          .map((point) => ({
+            close: point.close ?? undefined,
+            volume: point.volume ?? undefined,
+          }))
+          .filter(
+            (point) =>
+              typeof point.close === "number" &&
+              Number.isFinite(point.close) &&
+              point.close > 0,
+          );
+        const tradingPoints = points.filter(
+          (point) =>
+            typeof point.volume === "number" &&
+            Number.isFinite(point.volume) &&
+            point.volume > 0,
+        );
+
+        const closes = tradingPoints.map((p) => p.close as number);
+        const last = closes.length ? closes[closes.length - 1] : undefined;
+        const prev = closes.length > 1 ? closes[closes.length - 2] : undefined;
+        const week = closes.length > 5 ? closes[closes.length - 6] : undefined;
+        const month = closes.length > 21 ? closes[closes.length - 22] : undefined;
+        const change = (current?: number, prior?: number) =>
+          typeof current === "number" &&
+          typeof prior === "number" &&
+          Number.isFinite(current) &&
+          Number.isFinite(prior) &&
+          prior !== 0
+            ? ((current - prior) / prior) * 100
+            : undefined;
+        const change1dFromQuote = computeChangePct(
+          quote?.currentPrice,
+          quote?.previousClose,
+        );
+
+        return {
+          symbol: item.symbol,
+          name: item.name,
+          category: item.category,
+          sizeWeight: item.sizeWeight,
+          price:
+            typeof quote?.currentPrice === "number" && Number.isFinite(quote.currentPrice)
+              ? quote.currentPrice
+              : last,
+          volume: tradingPoints.length
+            ? tradingPoints[tradingPoints.length - 1]?.volume
+            : undefined,
+          change1d:
+            typeof change1dFromQuote === "number" && Number.isFinite(change1dFromQuote)
+              ? change1dFromQuote
+              : change(last, prev),
+          change1w: change(last, week),
+          change1m: change(last, month),
+          sparkline: closes.slice(-20),
+        } satisfies SectorHeatmapItem;
+      }),
+    ),
     fetchScreener("day_gainers", 8, { revalidate: 120 }),
     fetchScreener("day_losers", 8, { revalidate: 120 }),
     fetchTrending("US", 10, { revalidate: 120 }),
@@ -177,40 +240,7 @@ export default async function Home() {
           <MoversList title="Top Losers" items={losers?.quotes ?? []} />
         </section>
 
-        <section className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sector Heatmap</h2>
-          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {SECTOR_ETFS.map((sector, idx) => {
-              const quote = sectorQuotes[idx];
-              const pct = computeChangePct(quote?.currentPrice, quote?.previousClose);
-              const up = typeof pct === "number" && pct >= 0;
-              return (
-                <Link
-                  key={`sector-${sector.symbol}`}
-                  href={`/${sector.symbol}`}
-                  className={`rounded-lg border p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-400/60 dark:hover:border-slate-500/60 ${getHeatTileClass(pct)}`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="text-base font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                        {sector.name}
-                      </div>
-                      <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
-                        {sector.symbol}
-                      </div>
-                    </div>
-                    <div className={`text-xs font-medium ${up ? "text-green-700" : "text-red-700"}`}>
-                      {typeof pct === "number" ? `${up ? "+" : ""}${pct.toFixed(2)}%` : "–"}
-                    </div>
-                  </div>
-                  <div className="mt-2 text-sm text-gray-800 dark:text-gray-100">
-                    {formatCurrency(quote?.currentPrice)}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+        <SectorHeatmap sectors={sectorSnapshots} defaultTimeframe="1d" />
 
         <section className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Trending Symbols</h2>
