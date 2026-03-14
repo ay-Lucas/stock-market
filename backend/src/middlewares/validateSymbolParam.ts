@@ -19,16 +19,17 @@ export const validateSymbolParam = (
     return;
   }
   const symbolArray = symbol.split(","); //  Some routes allow an array of symbols
-  const onlyAlphabetic = symbolArray.every((str) => isAlphabetic(str));
-  if (!onlyAlphabetic) {
+  const onlyValidTickerChars = symbolArray.every((str) => isTickerSymbol(str));
+  if (!onlyValidTickerChars) {
     res.status(400).json({
-      error: "Symbol param must only contain uppercase alphabetic characters",
+      error:
+        "Symbol param must only contain uppercase alphabetic characters, periods, and dashes",
     });
     return;
   }
   next();
 };
 
-function isAlphabetic(str: string) {
-  return /^[a-zA-Z]+$/.test(str);
+function isTickerSymbol(str: string) {
+  return /^[A-Z.-]+$/.test(str);
 }
