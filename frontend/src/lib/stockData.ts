@@ -164,3 +164,68 @@ export async function fetchNews(
     console.error(`Error fetching news for ${ticker}:`, error);
   }
 }
+
+export type ScreenerQuote = {
+  symbol?: string;
+  shortName?: string;
+  longName?: string;
+  regularMarketPrice?: number;
+  regularMarketChange?: number;
+  regularMarketChangePercent?: number;
+  regularMarketVolume?: number;
+  marketCap?: number;
+};
+
+export type ScreenerResponse = {
+  id?: string;
+  quotes?: ScreenerQuote[];
+};
+
+export type TrendingResponse = {
+  finance?: {
+    result?: Array<{
+      count?: number;
+      quotes?: ScreenerQuote[];
+    }>;
+  };
+};
+
+export async function fetchScreener(
+  scrId: string,
+  count: number = 8,
+  opts: FetchISROptions = {},
+): Promise<ScreenerResponse | undefined> {
+  try {
+    const params = new URLSearchParams({
+      scrId,
+      count: String(count),
+    });
+    return await fetchJSON<ScreenerResponse>(
+      `/api/stocks/screener?${params.toString()}`,
+      opts.revalidate ?? 120,
+      opts,
+    );
+  } catch (error) {
+    console.error(`Error fetching screener for ${scrId}:`, error);
+  }
+}
+
+export async function fetchTrending(
+  iso2: string = "US",
+  count: number = 10,
+  opts: FetchISROptions = {},
+): Promise<TrendingResponse | undefined> {
+  try {
+    const params = new URLSearchParams({
+      iso2,
+      count: String(count),
+    });
+    return await fetchJSON<TrendingResponse>(
+      `/api/stocks/trending?${params.toString()}`,
+      opts.revalidate ?? 120,
+      opts,
+    );
+  } catch (error) {
+    console.error(`Error fetching trending symbols:`, error);
+  }
+}
