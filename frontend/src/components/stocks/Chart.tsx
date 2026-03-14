@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from "react";
 import { useTheme } from "next-themes";
@@ -50,6 +51,30 @@ export const Chart = forwardRef<ChartHandle, ChartComponentProps>(
             top: areaTopColor,
             bottom: areaBottomColor,
           };
+
+    const normalizedData = useMemo(() => {
+      const toEpoch = (time: Time): number => {
+        if (typeof time === "number") return time;
+        if (typeof time === "string") {
+          const parsed = Date.parse(`${time}T00:00:00Z`);
+          return Number.isNaN(parsed) ? 0 : Math.floor(parsed / 1000);
+        }
+        return 0;
+      };
+
+      const sorted = [...data].sort((a, b) => toEpoch(a.time) - toEpoch(b.time));
+      const deduped: ChartComponentProps["data"] = [];
+      for (const point of sorted) {
+        const last = deduped[deduped.length - 1];
+        if (!last || toEpoch(last.time) !== toEpoch(point.time)) {
+          deduped.push(point);
+        } else {
+          // If duplicate times are returned, keep the latest point value.
+          deduped[deduped.length - 1] = point;
+        }
+      }
+      return deduped;
+    }, [data]);
 
     // Initialize chart once
     useEffect(() => {
@@ -98,10 +123,10 @@ export const Chart = forwardRef<ChartHandle, ChartComponentProps>(
     // Update series data when `data` changes
     useEffect(() => {
       if (seriesRef.current) {
-        seriesRef.current.setData(data);
+        seriesRef.current.setData(normalizedData);
         chartRef.current?.timeScale().fitContent();
       }
-    }, [data]);
+    }, [normalizedData]);
 
     // Update theme colors when theme changes
     useEffect(() => {

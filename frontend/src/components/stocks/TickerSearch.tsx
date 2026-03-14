@@ -18,19 +18,23 @@ export default function TickerSearch({
   const [lastSelected, setLastSelected] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const debouncedQuery = useDebounce(query, 200);
+  const debouncedQuery = useDebounce(query, 400);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const search = async () => {
-      if (!debouncedQuery || debouncedQuery.length < 1) {
+      const trimmed = debouncedQuery.trim();
+      if (!trimmed || trimmed.length < 2) {
         setResults([]);
+        setOpen(false);
         return;
       }
 
       // If the user just selected this exact ticker, don't reopen suggestions
       if (
         lastSelected &&
-        debouncedQuery.toUpperCase() === lastSelected.toUpperCase()
+        trimmed.toUpperCase() === lastSelected.toUpperCase()
       ) {
         setResults([]);
         setOpen(false);
@@ -39,18 +43,28 @@ export default function TickerSearch({
       try {
         setLoading(true);
         const res = await fetch(
-          `/api/stocks/search?q=${encodeURIComponent(debouncedQuery)}`,
+          `/api/stocks/search?q=${encodeURIComponent(trimmed)}`,
+          { signal: controller.signal },
         );
+        if (!res.ok) {
+          setResults([]);
+          setOpen(false);
+          return;
+        }
         const data: SearchResult = await res.json();
-        setResults(data.quotes?.slice(0, 8) ?? []);
-        setOpen(true);
-      } catch {
+        const next = data.quotes?.slice(0, 8) ?? [];
+        setResults(next);
+        setOpen(next.length > 0);
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
         setResults([]);
+        setOpen(false);
       } finally {
         setLoading(false);
       }
     };
     search();
+    return () => controller.abort();
   }, [debouncedQuery, lastSelected]);
 
   // Close on outside click or Escape key

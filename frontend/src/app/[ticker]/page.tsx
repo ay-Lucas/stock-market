@@ -16,7 +16,7 @@ export default async function TickerPage({
   const ticker = (await params).ticker?.toUpperCase() || "AAPL";
   const now = new Date();
   const from = new Date();
-  from.setFullYear(now.getFullYear() - 50);
+  from.setFullYear(now.getFullYear() - 20);
 
   const [historical, quote, summary, news] = await Promise.all([
     fetchStockData(ticker, from, now, "1d", undefined, { revalidate: 60 }),

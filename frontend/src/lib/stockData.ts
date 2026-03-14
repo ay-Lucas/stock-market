@@ -34,7 +34,28 @@ async function fetchJSON<T>(
       }
     : { cache: opts.cache ?? "no-store" };
   const res = await fetch(`${base}${pathWithQuery}`, requestInit);
-  return (await res.json()) as T;
+  const contentType = res.headers.get("content-type") ?? "";
+  const isJSON = contentType.includes("application/json");
+  const bodyText = await res.text();
+
+  if (!res.ok) {
+    const body = bodyText.slice(0, 200);
+    throw new Error(
+      `Request failed (${res.status}) for ${pathWithQuery}: ${body}`,
+    );
+  }
+
+  if (!isJSON) {
+    throw new Error(
+      `Expected JSON for ${pathWithQuery}, got '${contentType || "unknown"}': ${bodyText.slice(0, 200)}`,
+    );
+  }
+
+  if (!bodyText.trim()) {
+    throw new Error(`Empty JSON response for ${pathWithQuery}`);
+  }
+
+  return JSON.parse(bodyText) as T;
 }
 
 const POLYGON_INTERVALS: readonly string[] = [
