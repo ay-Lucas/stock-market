@@ -1,6 +1,6 @@
-import yahooFinance from "yahoo-finance2";
+import { yahooFinance } from "../utils/yahooRequest";
 import { Request, Response } from "express";
-import { HistoricalDividendsResult } from "yahoo-finance2/dist/esm/src/modules/historical";
+import type { HistoricalDividendsResult } from "../types/yahoo";
 
 /**
  * Controller to fetch dividend history for a given stock symbol.

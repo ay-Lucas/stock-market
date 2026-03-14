@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { RecommendationsBySymbolResponseArray } from "yahoo-finance2/dist/esm/src/modules/recommendationsBySymbol";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { RecommendationsBySymbolResponseArray } from "../types/yahoo";
 
 export const getRecommendationsData = async (
   req: Request,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { fetchStockQuote } from "../services/quoteService";
 import { StockData } from "@shared/types/stock";
+import { isYahooRateLimitError } from "../utils/yahooRequest";
 
 export const getStockQuote = async (
   req: Request,
@@ -13,10 +14,19 @@ export const getStockQuote = async (
 
     res.status(200).json(stockData);
   } catch (error: unknown) {
-    console.error(
-      `Error fetching stock quote for ${symbol}:`,
-      (error as Error).message,
-    );
+    const message = (error as Error).message ?? "";
+    const normalized = message.toLowerCase();
+    if (
+      isYahooRateLimitError(error) ||
+      normalized.includes("not_authorized") ||
+      normalized.includes("not entitled") ||
+      normalized.includes("403")
+    ) {
+      console.warn(`Provider-limited quote fallback for ${symbol}:`, message);
+      res.status(200).json({});
+      return;
+    }
+    console.error(`Error fetching stock quote for ${symbol}:`, message);
     res.status(500).json({ error: "Failed to fetch stock quote" });
   }
 };

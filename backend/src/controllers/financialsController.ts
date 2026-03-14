@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { QuoteSummaryResult } from "yahoo-finance2/dist/esm/src/modules/quoteSummary-iface";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { QuoteSummaryResult } from "../types/yahoo";
 
 export const getFinancialData = async (
   req: Request,

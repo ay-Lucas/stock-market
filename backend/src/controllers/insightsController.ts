@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { InsightsResult } from "yahoo-finance2/dist/esm/src/modules/insights";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { InsightsResult } from "../types/yahoo";
 
 export const getInsightsData = async (
   req: Request,

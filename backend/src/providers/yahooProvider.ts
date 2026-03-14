@@ -1,12 +1,13 @@
-import yahooFinance from "yahoo-finance2";
 import { StockData } from "@shared/types/stock";
 import { YahooInterval } from "@shared/types/yahoo";
-import { ChartResultArray } from "yahoo-finance2/dist/esm/src/modules/chart";
+import { ChartResultArray } from "yahoo-finance2/script/src/modules/chart";
+import { runYahooRequest, yahooFinance } from "../utils/yahooRequest";
 
 export const fetchYahooStockQuote = async (
   symbol: string,
 ): Promise<StockData> => {
-  const data = await yahooFinance.quote(symbol);
+  console.log("fetching yahoo stock quote...");
+  const data = await runYahooRequest(() => yahooFinance.quote(symbol), 0);
 
   if (!data) {
     throw new Error(`No data found for symbol: ${symbol}`);
@@ -36,9 +37,13 @@ export const fetchYahooHistoricalData = async (
   to: string | Date,
   interval: YahooInterval,
 ): Promise<ChartResultArray> => {
-  return yahooFinance.chart(symbol, {
-    period1: from,
-    period2: to,
-    interval,
-  });
+  return runYahooRequest(
+    () =>
+      yahooFinance.chart(symbol, {
+        period1: from,
+        period2: to,
+        interval,
+      }),
+    1,
+  );
 };

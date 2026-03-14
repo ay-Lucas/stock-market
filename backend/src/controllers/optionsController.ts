@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { OptionsResult } from "yahoo-finance2/dist/esm/src/modules/options";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { OptionsResult } from "../types/yahoo";
 
 export const getOptionsData = async (
   req: Request,

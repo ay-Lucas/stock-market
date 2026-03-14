@@ -3,8 +3,33 @@ import { fetchYahooHistoricalData } from "../providers/yahooProvider";
 import { YahooInterval } from "@shared/types/yahoo";
 import { isYahooInterval } from "../utils/intervalUtils";
 import { HistoricalData } from "@shared/types/stock";
-import { ChartResultArray } from "yahoo-finance2/dist/esm/src/modules/chart";
+import { ChartResultArray } from "yahoo-finance2/script/src/modules/chart";
 import { PolygonAggregateBarResponse } from "@shared/types/polygon";
+import { PolygonInterval } from "@shared/types/polygon";
+
+const mapYahooToPolygon = (
+  interval: YahooInterval,
+): { interval: PolygonInterval; multiplier: number } => {
+  switch (interval) {
+    case "60m":
+    case "1h":
+      return { interval: "hour", multiplier: 1 };
+    case "90m":
+      return { interval: "minute", multiplier: 90 };
+    case "1d":
+      return { interval: "day", multiplier: 1 };
+    case "5d":
+      return { interval: "day", multiplier: 5 };
+    case "1wk":
+      return { interval: "week", multiplier: 1 };
+    case "1mo":
+      return { interval: "month", multiplier: 1 };
+    case "3mo":
+      return { interval: "month", multiplier: 3 };
+    default:
+      return { interval: "day", multiplier: 1 };
+  }
+};
 
 export const fetchHistoricalData = async (
   symbol: string,
@@ -13,6 +38,9 @@ export const fetchHistoricalData = async (
   interval: string,
   multiplier?: number,
 ): Promise<HistoricalData | undefined> => {
+  let fallbackPolygonInterval: string = interval;
+  let fallbackPolygonMultiplier = multiplier ?? 1;
+
   // Use Yahoo Finance if interval matches
   if (isYahooInterval(interval)) {
     try {
@@ -43,6 +71,9 @@ export const fetchHistoricalData = async (
       console.error(
         `Error fetching historical data from Yahoo Finance: ${(yahooError as Error).message}`,
       );
+      const mapped = mapYahooToPolygon(interval as YahooInterval);
+      fallbackPolygonInterval = mapped.interval;
+      fallbackPolygonMultiplier = mapped.multiplier;
     }
   }
 
@@ -53,8 +84,8 @@ export const fetchHistoricalData = async (
         symbol,
         from,
         to,
-        interval,
-        multiplier ?? 1,
+        fallbackPolygonInterval,
+        fallbackPolygonMultiplier,
       );
 
     // Transform Polygon response into UnifiedHistoricalData format

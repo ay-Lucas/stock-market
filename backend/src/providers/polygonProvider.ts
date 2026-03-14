@@ -1,27 +1,51 @@
 import { PolygonAggregateBarResponse } from "@shared/types/polygon";
 import { StockData } from "@shared/types/stock";
 
+const normalizePolygonRangeDate = (value: string): string => {
+  if (/^\d+$/.test(value)) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10);
+  }
+
+  return value;
+};
+
 export const fetchPolygonQuote = async (symbol: string): Promise<StockData> => {
   const API_KEY = process.env.POLYGON_API_KEY;
   if (!API_KEY) {
     throw new Error("Polygon API key is missing");
   }
 
-  const url = `https://api.polygon.io/v1/quote/${symbol}?apiKey=${API_KEY}`;
+  const url = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}?apiKey=${API_KEY}`;
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Polygon API error: ${response.statusText}`);
+    const body = await response.text();
+    throw new Error(
+      `Polygon API error: ${response.status} ${response.statusText}${body ? ` - ${body}` : ""}`,
+    );
   }
 
   const data = await response.json();
+  const day = data?.ticker?.day;
+  const prevDay = data?.ticker?.prevDay;
+  const updated = data?.ticker?.updated;
+
+  if (!day || !prevDay) {
+    throw new Error(`Polygon API returned no quote data for ${symbol}`);
+  }
+
   return {
-    currentPrice: data.c,
-    highPrice: data.h,
-    lowPrice: data.l,
-    openPrice: data.o,
-    previousClose: data.pc,
-    timestamp: new Date(data.t * 1000).toISOString(),
+    currentPrice: day.c ?? 0,
+    highPrice: day.h ?? 0,
+    lowPrice: day.l ?? 0,
+    openPrice: day.o ?? 0,
+    previousClose: prevDay.c ?? 0,
+    timestamp: updated ? new Date(updated).toISOString() : new Date().toISOString(),
   };
 };
 
@@ -42,14 +66,23 @@ export const fetchPolygonHistoricalData = async (
   multiplier: number,
 ): Promise<PolygonAggregateBarResponse> => {
   const API_KEY = process.env.POLYGON_API_KEY;
-  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/${multiplier}/${interval}/${from}/${to}?apiKey=${API_KEY}`;
+  const normalizedFrom = normalizePolygonRangeDate(from);
+  const normalizedTo = normalizePolygonRangeDate(to);
+  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/${multiplier}/${interval}/${normalizedFrom}/${normalizedTo}?apiKey=${API_KEY}`;
 
   try {
     const response = await fetch(url);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.error || "Unknown error from Polygon API";
+      const raw = await response.text();
+      let errorMessage = raw || "Unknown error from Polygon API";
+      try {
+        const errorData = JSON.parse(raw) as { error?: string; message?: string };
+        errorMessage =
+          errorData.error ?? errorData.message ?? errorMessage;
+      } catch {
+        // Polygon sometimes responds with plain text for 4xx/5xx.
+      }
       console.error(
         `Polygon API error (status ${response.status}): ${errorMessage}`,
       );

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { DailyGainersResult } from "yahoo-finance2/dist/esm/src/modules/dailyGainers";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { DailyGainersResult } from "../types/yahoo";
 
 // Only working on weekend when count = 0 or 1
 // Use the screener route instead with param scrId="daily_gainers"
@@ -9,12 +9,15 @@ export const getDailyGainersData = async (
   res: Response,
 ): Promise<void> => {
   const { count } = req.query;
-
-  const queryOptions = { count: Number(count) };
+  const maxCount = Number(count) > 0 ? Number(count) : undefined;
 
   try {
-    const data: DailyGainersResult =
-      await yahooFinance.dailyGainers(queryOptions);
+    const data: DailyGainersResult = await yahooFinance.screener({
+      scrIds: "day_gainers",
+      count: maxCount ?? 5,
+      region: "US",
+      lang: "en-US",
+    });
 
     if (!data) {
       res.status(404).json({ error: `No daily gainers` });

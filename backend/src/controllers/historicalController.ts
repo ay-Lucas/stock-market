@@ -57,7 +57,17 @@ export const getHistoricalData = async (
         period1 as string,
         period2 as string,
         interval as string,
+        multiplier ? parseInt(multiplier as string, 10) : undefined,
       );
+
+    if (!historicalData) {
+      res.status(200).json({
+        meta: { symbol: uppercaseSymbol },
+        results: [],
+        errors: ["Historical data unavailable from upstream providers"],
+      } satisfies HistoricalData);
+      return;
+    }
 
     res.status(200).json(historicalData);
   } catch (error: unknown) {

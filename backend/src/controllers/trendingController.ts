@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import yahooFinance from "yahoo-finance2";
-import { TrendingSymbolsResult } from "yahoo-finance2/dist/esm/src/modules/trendingSymbols";
+import { yahooFinance } from "../utils/yahooRequest";
+import type { TrendingSymbolsResult } from "../types/yahoo";
 
 export const getTrendingData = async (
   req: Request,
