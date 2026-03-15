@@ -32,7 +32,7 @@ export default async function TickerPage({
     })) ?? [];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between p-6 sm:p-12 gap-12 bg-gray-50 dark:bg-gray-950 font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-between p-6 sm:p-12 gap-12 bg-[radial-gradient(circle_at_20%_0%,#dbeafe_0%,#f8fafc_38%,#eef2ff_100%)] dark:bg-[radial-gradient(circle_at_20%_0%,#111827_0%,#030712_45%,#1e1b4b_100%)] font-sans">
       <main className="w-full flex flex-col items-center gap-8">
         <StockDashboard
           initialTicker={ticker}

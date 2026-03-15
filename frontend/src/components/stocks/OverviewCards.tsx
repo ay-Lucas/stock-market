@@ -111,8 +111,8 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-sm">
-      <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+    <div className="rounded-lg border border-indigo-200/70 dark:border-indigo-500/30 bg-gradient-to-br from-white via-indigo-50/50 to-sky-50/50 dark:from-gray-900 dark:via-indigo-950/20 dark:to-slate-900 p-3 shadow-sm">
+      <div className="text-xs uppercase tracking-wide text-indigo-700 dark:text-indigo-300 mb-1">
         {title}
       </div>
       {children}

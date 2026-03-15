@@ -97,32 +97,32 @@ export default function StockDashboard({
   };
 
   return (
-    <div className="w-full max-w-4xl flex flex-col items-center gap-6">
-      <div className="w-full flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+    <div className="w-full max-w-5xl flex flex-col items-center gap-6">
+      <div className="w-full flex items-center justify-between rounded-xl border border-cyan-200/60 dark:border-violet-500/30 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 dark:from-indigo-950 dark:via-violet-900 dark:to-fuchsia-900 px-4 py-3 text-white shadow-lg shadow-blue-500/20 dark:shadow-violet-900/40">
+        <h2 className="text-2xl font-semibold">
           {ticker}
         </h2>
-        <div className="flex gap-2 text-black dark:text-gray-100">
+        <div className="flex gap-2">
           <button
-            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
+            className="rounded-md border border-white/30 bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 transition-colors"
             onClick={() => setMonthsRange(6)}
           >
             6M
           </button>
           <button
-            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
+            className="rounded-md border border-white/30 bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 transition-colors"
             onClick={() => setMonthsRange(12)}
           >
             1Y
           </button>
           <button
-            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
+            className="rounded-md border border-white/30 bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 transition-colors"
             onClick={() => setMonthsRange(60)}
           >
             5Y
           </button>
           <button
-            className="bg-gray-200 dark:bg-gray-800 rounded px-2 py-1"
+            className="rounded-md border border-white/30 bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 transition-colors"
             onClick={() => chartRef.current?.fitContent()}
           >
             Max
@@ -134,14 +134,14 @@ export default function StockDashboard({
         <div className="text-gray-600">Loading chart…</div>
       ) : (
         data.length > 0 && (
-          <div className="w-full">
+          <div className="w-full rounded-xl border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/80 p-3 shadow-sm backdrop-blur">
             <Chart ref={chartRef} data={data} />
           </div>
         )
       )}
       <OverviewCards ticker={ticker} quote={quote} summary={summary} />
       <div className="w-full">
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
           Latest News
         </h3>
       </div>

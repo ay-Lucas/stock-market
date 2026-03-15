@@ -16,10 +16,15 @@ export default function Header() {
     router.push(`/${s}`);
   };
   return (
-    <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 text-gray-800 dark:text-gray-100">
-      <div className="container mx-auto flex items-center justify-between py-4 px-6 sm:px-12 w-full">
-        <div className="text-2xl font-bold whitespace-nowrap">
-          <Link href="/">Stock-Matic</Link>
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-slate-700 bg-white/85 dark:bg-slate-900/85 text-slate-800 dark:text-slate-100 shadow-md backdrop-blur">
+      <div className="container mx-auto flex w-full items-center justify-between px-6 py-4 sm:px-12">
+        <div className="text-2xl font-bold whitespace-nowrap tracking-tight">
+          <Link
+            href="/"
+            className="rounded-md px-2 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Stock-Matic
+          </Link>
         </div>
         <div className="flex gap-4 items-center w-full">
           <div className="hidden sm:flex flex-1 items-center justify-center">
@@ -32,13 +37,13 @@ export default function Header() {
         <nav className="flex gap-4 items-center">
           <Link
             href="/stocks"
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            className="rounded-md px-2 py-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             Stocks
           </Link>
           <Link
             href="/news"
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            className="rounded-md px-2 py-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             News
           </Link>
@@ -60,7 +65,7 @@ export default function Header() {
                   : "Dark mode"
                 : "Toggle theme"
             }
-            className="ml-2 inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-700 p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="ml-2 inline-flex items-center justify-center rounded-md border border-slate-300 dark:border-slate-600 p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
             {mounted ? (
               resolvedTheme === "dark" ? (

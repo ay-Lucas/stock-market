@@ -77,8 +77,8 @@ function MoversList({
   items: ScreenerQuote[];
 }) {
   return (
-    <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+    <section className="rounded-xl border border-indigo-200/70 dark:border-indigo-500/30 bg-gradient-to-br from-white via-indigo-50/50 to-sky-50/50 dark:from-gray-900 dark:via-indigo-950/20 dark:to-slate-900 p-4 shadow-sm">
+      <h2 className="text-lg font-semibold text-indigo-950 dark:text-indigo-100">{title}</h2>
       <div className="mt-3 space-y-2">
         {items.length === 0 && (
           <div className="text-sm text-gray-500 dark:text-gray-400">No data available.</div>
@@ -91,7 +91,7 @@ function MoversList({
             <Link
               key={`${title}-${symbol}`}
               href={`/${encodeURIComponent(symbol)}`}
-              className="flex items-center justify-between rounded-md px-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="flex items-center justify-between rounded-md px-2 py-2 hover:bg-white/80 dark:hover:bg-indigo-900/20"
             >
               <div>
                 <div className="font-medium text-gray-900 dark:text-gray-100">{symbol}</div>
@@ -196,12 +196,12 @@ export default async function Home() {
   const topNews: NewsItem[] = news ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#dbeafe_0%,#f8fafc_38%,#eef2ff_100%)] dark:bg-[radial-gradient(circle_at_20%_0%,#111827_0%,#030712_45%,#1e1b4b_100%)]">
       <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-slate-900 to-slate-700 p-6 text-white">
-          <div className="text-xs uppercase tracking-wide text-slate-300">Stock Market Dashboard</div>
+        <section className="rounded-2xl border border-cyan-200/60 dark:border-violet-500/30 bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 dark:from-indigo-950 dark:via-violet-900 dark:to-fuchsia-900 p-6 text-white shadow-xl shadow-blue-500/20 dark:shadow-violet-900/40">
+          <div className="text-xs uppercase tracking-wide text-blue-100 dark:text-slate-300">Stock Market Dashboard</div>
           <h1 className="mt-2 text-3xl font-bold">Market Home</h1>
-          <p className="mt-2 text-sm text-slate-200">
+          <p className="mt-2 text-sm text-blue-50 dark:text-slate-200">
             Track indices, top movers, trending names, and major headlines.
           </p>
           <div className="mt-5 max-w-2xl">
@@ -210,7 +210,7 @@ export default async function Home() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Indices</h2>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Indices</h2>
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {INDEX_PROXIES.map((symbol, idx) => {
               const quote = indexQuotes[idx];
@@ -220,7 +220,7 @@ export default async function Home() {
                 <Link
                   key={symbol}
                   href={`/${symbol}`}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/80 p-4 backdrop-blur hover:bg-white dark:hover:bg-slate-800"
                 >
                   <div className="text-sm text-gray-500 dark:text-gray-400">{symbol}</div>
                   <div className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -242,8 +242,8 @@ export default async function Home() {
 
         <SectorHeatmap sectors={sectorSnapshots} defaultTimeframe="1d" />
 
-        <section className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Trending Symbols</h2>
+        <section className="mt-8 rounded-xl border border-emerald-200/70 dark:border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/40 to-cyan-50/40 dark:from-gray-900 dark:via-emerald-950/20 dark:to-slate-900 p-4 shadow-sm">
+          <h2 className="text-lg font-semibold text-emerald-950 dark:text-emerald-100">Trending Symbols</h2>
           <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
             {trendingQuotes.length === 0 && (
               <div className="text-sm text-gray-500 dark:text-gray-400">No trending symbols available.</div>
@@ -254,7 +254,7 @@ export default async function Home() {
                 <Link
                   key={`trending-${symbol}`}
                   href={`/${encodeURIComponent(symbol)}`}
-                  className="rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="rounded-md border border-emerald-200/70 dark:border-emerald-700/60 bg-white/60 dark:bg-slate-900/40 px-3 py-2 hover:bg-white dark:hover:bg-emerald-900/20"
                 >
                   <div className="font-medium text-gray-900 dark:text-gray-100">{symbol}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -277,11 +277,11 @@ export default async function Home() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Top Market News</h2>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Top Market News</h2>
           <div className="mt-3">
             <NewsList items={topNews} />
             {topNews.length === 0 && (
-              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 text-sm text-gray-500 dark:text-gray-400">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/70 p-4 text-sm text-gray-500 dark:text-gray-400 backdrop-blur">
                 No market news available right now.
               </div>
             )}

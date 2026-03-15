@@ -23,7 +23,7 @@ export const RangeSwitchingChart = () => {
           {[...intervals].map(([key], index: number) => (
             <button
               key={index}
-              className="bg-gray-200 rounded-lg p-1 px-3 text-black"
+              className="bg-gray-200 dark:bg-gray-800 rounded-lg p-1 px-3 text-black dark:text-gray-100"
               onClick={() => setInterval(intervals.get(key) ?? "1mo")}
             >
               {key}

@@ -24,7 +24,7 @@ export default function NewsList({ items }: { items: NewsItem[] }) {
           href={n.link}
           target="_blank"
           rel="noreferrer"
-          className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          className="flex items-start gap-3 rounded-lg border border-emerald-200/70 dark:border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/40 to-cyan-50/40 dark:from-gray-900 dark:via-emerald-950/20 dark:to-slate-900 p-3 hover:bg-white dark:hover:bg-emerald-900/20 transition-colors"
         >
           {n.thumbnail?.resolutions?.[0]?.url ? (
             <img
