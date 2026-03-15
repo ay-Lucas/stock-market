@@ -99,10 +99,10 @@ function MoversList({
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-900 dark:text-gray-100">
+                <div className="price-nums text-sm text-gray-900 dark:text-gray-100">
                   {formatCurrency(item.regularMarketPrice)}
                 </div>
-                <div className={`text-xs ${up ? "text-green-600" : "text-red-600"}`}>
+                <div className={`price-nums text-xs ${up ? "text-green-600" : "text-red-600"}`}>
                   {typeof pct === "number" ? `${up ? "+" : ""}${pct.toFixed(2)}%` : "–"}
                 </div>
               </div>
@@ -228,10 +228,10 @@ export default async function Home() {
                   className="rounded-xl border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/80 p-4 backdrop-blur hover:bg-white dark:hover:bg-slate-800"
                 >
                   <div className="text-sm text-gray-500 dark:text-gray-400">{symbol}</div>
-                  <div className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
+                  <div className="price-nums mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {formatCurrency(quote?.currentPrice)}
                   </div>
-                  <div className={`mt-1 text-sm ${up ? "text-green-600" : "text-red-600"}`}>
+                  <div className={`price-nums mt-1 text-sm ${up ? "text-green-600" : "text-red-600"}`}>
                     {typeof pct === "number" ? `${up ? "+" : ""}${pct.toFixed(2)}%` : "–"}
                   </div>
                 </Link>
@@ -285,11 +285,11 @@ export default async function Home() {
                   className="rounded-md border border-emerald-200/70 dark:border-emerald-700/60 bg-white/60 dark:bg-slate-900/40 px-3 py-2 hover:bg-white dark:hover:bg-emerald-900/20"
                 >
                   <div className="font-medium text-gray-900 dark:text-gray-100">{symbol}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="price-nums text-xs text-gray-500 dark:text-gray-400">
                     Vol {formatCompact(item.regularMarketVolume)}
                   </div>
                   <div
-                    className={`text-xs ${
+                    className={`price-nums text-xs ${
                       typeof item.regularMarketChangePercent === "number" &&
                       item.regularMarketChangePercent >= 0
                         ? "text-green-600"

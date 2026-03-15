@@ -306,12 +306,12 @@ export default function StocksExplorer({ rows }: { rows: ExplorerRow[] }) {
                   <td className="px-3 py-2 text-slate-600 dark:text-slate-300 max-w-56 truncate">
                     {row.name ?? "—"}
                   </td>
-                  <td className="px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCurrency(row.price)}</td>
-                  <td className={`px-3 py-2 text-right ${up ? "text-emerald-600" : "text-rose-600"}`}>
+                  <td className="price-nums px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCurrency(row.price)}</td>
+                  <td className={`price-nums px-3 py-2 text-right ${up ? "text-emerald-600" : "text-rose-600"}`}>
                     {formatPct(row.changePct)}
                   </td>
-                  <td className="px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCompact(row.volume)}</td>
-                  <td className="px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCompact(row.marketCap)}</td>
+                  <td className="price-nums px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCompact(row.volume)}</td>
+                  <td className="price-nums px-3 py-2 text-right text-slate-900 dark:text-slate-100">{formatCompact(row.marketCap)}</td>
                   <td className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
                     {row.sources.join(", ")}
                   </td>

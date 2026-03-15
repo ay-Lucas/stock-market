@@ -67,11 +67,11 @@ export default function OverviewCards({ ticker, quote, summary }: Props) {
   return (
     <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3 text-black dark:text-gray-100">
       <Card title={`${ticker} Price`}>
-        <div className="text-xl font-semibold">
+        <div className="price-nums text-xl font-semibold">
           {current != null ? formatCurrency(current) : "–"}
         </div>
         <div
-          className={`text-sm ${change != null ? (change >= 0 ? "text-green-600" : "text-red-600") : "text-gray-500"}`}
+          className={`price-nums text-sm ${change != null ? (change >= 0 ? "text-green-600" : "text-red-600") : "text-gray-500"}`}
         >
           {change != null
             ? `${change >= 0 ? "+" : ""}${formatCurrency(Math.abs(change))} (${pct(changePct ?? 0)})`
@@ -80,22 +80,22 @@ export default function OverviewCards({ ticker, quote, summary }: Props) {
       </Card>
 
       <Card title="52W Range">
-        <div className="text-sm">
+        <div className="price-nums text-sm">
           Low: {weekLow != null ? formatCurrency(weekLow) : "–"}
         </div>
-        <div className="text-sm">
+        <div className="price-nums text-sm">
           High: {weekHigh != null ? formatCurrency(weekHigh) : "–"}
         </div>
       </Card>
 
       <Card title="Market Cap">
-        <div className="text-lg font-medium">{formatNumberCompact(mc)}</div>
+        <div className="price-nums text-lg font-medium">{formatNumberCompact(mc)}</div>
       </Card>
 
       <Card title="Valuation">
-        <div className="text-sm">P/E (TTM): {pe ?? "–"}</div>
-        <div className="text-sm">EPS (TTM): {eps ?? "–"}</div>
-        <div className="text-sm">
+        <div className="price-nums text-sm">P/E (TTM): {pe ?? "–"}</div>
+        <div className="price-nums text-sm">EPS (TTM): {eps ?? "–"}</div>
+        <div className="price-nums text-sm">
           Div. Yield: {dy != null && !isNaN(dy) ? pct(dy) : "–"}
         </div>
       </Card>
