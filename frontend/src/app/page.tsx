@@ -6,7 +6,6 @@ import SectorHeatmap, {
 import {
   fetchNews,
   fetchQuote,
-  fetchStockData,
   fetchScreener,
   fetchTrending,
   type NewsItem,
@@ -115,49 +114,23 @@ function MoversList({
 }
 
 export default async function Home() {
-  const [indexQuotes, sectorSnapshots, gainers, losers, trending, news] = await Promise.all([
+  const homeData = await Promise.allSettled([
     Promise.all(INDEX_PROXIES.map((symbol) => fetchQuote(symbol, { revalidate: 30 }))),
     Promise.all(
       SECTOR_ETFS.map(async (item) => {
         const quote = await fetchQuote(item.symbol, { revalidate: 30 });
-        const to = new Date();
-        const from = new Date();
-        from.setDate(to.getDate() - 45);
-        const historical = await fetchStockData(item.symbol, from, to, "1d", undefined, {
-          revalidate: 300,
-        });
-        const points = [...(historical?.results ?? [])]
-          .sort((a, b) => a.timestamp - b.timestamp)
-          .map((point) => ({
-            close: point.close ?? undefined,
-            volume: point.volume ?? undefined,
-          }))
-          .filter(
-            (point) =>
-              typeof point.close === "number" &&
-              Number.isFinite(point.close) &&
-              point.close > 0,
-          );
-        const tradingPoints = points.filter(
-          (point) =>
-            typeof point.volume === "number" &&
-            Number.isFinite(point.volume) &&
-            point.volume > 0,
-        );
-
-        const closes = tradingPoints.map((p) => p.close as number);
-        const last = closes.length ? closes[closes.length - 1] : undefined;
-        const prev = closes.length > 1 ? closes[closes.length - 2] : undefined;
-        const week = closes.length > 5 ? closes[closes.length - 6] : undefined;
-        const month = closes.length > 21 ? closes[closes.length - 22] : undefined;
-        const change = (current?: number, prior?: number) =>
-          typeof current === "number" &&
-          typeof prior === "number" &&
-          Number.isFinite(current) &&
-          Number.isFinite(prior) &&
-          prior !== 0
-            ? ((current - prior) / prior) * 100
-            : undefined;
+        const change = (current?: number, prior?: number) => {
+          if (
+            typeof current !== "number" ||
+            typeof prior !== "number" ||
+            !Number.isFinite(current) ||
+            !Number.isFinite(prior) ||
+            prior === 0
+          ) {
+            return undefined;
+          }
+          return ((current - prior) / prior) * 100;
+        };
         const change1dFromQuote = computeChangePct(
           quote?.currentPrice,
           quote?.previousClose,
@@ -168,20 +141,12 @@ export default async function Home() {
           name: item.name,
           category: item.category,
           sizeWeight: item.sizeWeight,
-          price:
-            typeof quote?.currentPrice === "number" && Number.isFinite(quote.currentPrice)
-              ? quote.currentPrice
-              : last,
-          volume: tradingPoints.length
-            ? tradingPoints[tradingPoints.length - 1]?.volume
-            : undefined,
-          change1d:
-            typeof change1dFromQuote === "number" && Number.isFinite(change1dFromQuote)
-              ? change1dFromQuote
-              : change(last, prev),
-          change1w: change(last, week),
-          change1m: change(last, month),
-          sparkline: closes.slice(-20),
+          price: quote?.currentPrice,
+          volume: undefined,
+          change1d: change1dFromQuote,
+          change1w: change(quote?.currentPrice, quote?.previousClose),
+          change1m: change(quote?.currentPrice, quote?.previousClose),
+          sparkline: [],
         } satisfies SectorHeatmapItem;
       }),
     ),
@@ -190,6 +155,30 @@ export default async function Home() {
     fetchTrending("US", 10, { revalidate: 120 }),
     fetchNews("SPY", { revalidate: 180 }),
   ]);
+
+  const [indexQuotesResult, sectorSnapshotsResult, gainersResult, losersResult, trendingResult, newsResult] =
+    homeData;
+
+  if (gainersResult.status === "rejected") {
+    console.error("Home gainers fetch failed:", gainersResult.reason);
+  }
+  if (losersResult.status === "rejected") {
+    console.error("Home losers fetch failed:", losersResult.reason);
+  }
+  if (trendingResult.status === "rejected") {
+    console.error("Home trending fetch failed:", trendingResult.reason);
+  }
+  if (newsResult.status === "rejected") {
+    console.error("Home news fetch failed:", newsResult.reason);
+  }
+
+  const indexQuotes = indexQuotesResult.status === "fulfilled" ? indexQuotesResult.value : [];
+  const sectorSnapshots =
+    sectorSnapshotsResult.status === "fulfilled" ? sectorSnapshotsResult.value : [];
+  const gainers = gainersResult.status === "fulfilled" ? gainersResult.value : undefined;
+  const losers = losersResult.status === "fulfilled" ? losersResult.value : undefined;
+  const trending = trendingResult.status === "fulfilled" ? trendingResult.value : undefined;
+  const news = newsResult.status === "fulfilled" ? newsResult.value : undefined;
 
   const rawTrendingQuotes = trending?.finance?.result?.[0]?.quotes ?? [];
   const trendingQuotes =

@@ -114,14 +114,39 @@ const mergeRows = (
 };
 
 export default async function StocksPage() {
-  const [mostActive, gainers, losers, undervaluedLargeCaps, trending] =
-    await Promise.all([
-      fetchScreener("most_actives", 10, { revalidate: 90 }),
-      fetchScreener("day_gainers", 10, { revalidate: 90 }),
-      fetchScreener("day_losers", 10, { revalidate: 90 }),
-      fetchScreener("undervalued_large_caps", 10, { revalidate: 180 }),
-      fetchTrending("US", 10, { revalidate: 90 }),
-    ]);
+  const stocksData = await Promise.allSettled([
+    fetchScreener("most_actives", 10, { revalidate: 90 }),
+    fetchScreener("day_gainers", 10, { revalidate: 90 }),
+    fetchScreener("day_losers", 10, { revalidate: 90 }),
+    fetchScreener("undervalued_large_caps", 10, { revalidate: 180 }),
+    fetchTrending("US", 10, { revalidate: 90 }),
+  ]);
+
+  const [mostActiveResult, gainersResult, losersResult, undervaluedResult, trendingResult] =
+    stocksData;
+
+  if (mostActiveResult.status === "rejected") {
+    console.error("Stocks page most active fetch failed:", mostActiveResult.reason);
+  }
+  if (gainersResult.status === "rejected") {
+    console.error("Stocks page gainers fetch failed:", gainersResult.reason);
+  }
+  if (losersResult.status === "rejected") {
+    console.error("Stocks page losers fetch failed:", losersResult.reason);
+  }
+  if (undervaluedResult.status === "rejected") {
+    console.error("Stocks page undervalued fetch failed:", undervaluedResult.reason);
+  }
+  if (trendingResult.status === "rejected") {
+    console.error("Stocks page trending fetch failed:", trendingResult.reason);
+  }
+
+  const mostActive = mostActiveResult.status === "fulfilled" ? mostActiveResult.value : undefined;
+  const gainers = gainersResult.status === "fulfilled" ? gainersResult.value : undefined;
+  const losers = losersResult.status === "fulfilled" ? losersResult.value : undefined;
+  const undervaluedLargeCaps =
+    undervaluedResult.status === "fulfilled" ? undervaluedResult.value : undefined;
+  const trending = trendingResult.status === "fulfilled" ? trendingResult.value : undefined;
 
   const rawTrendingQuotes = trending?.finance?.result?.[0]?.quotes ?? [];
   const trendingQuotes =

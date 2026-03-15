@@ -7,6 +7,7 @@ export type FetchISROptions = {
   revalidate?: number; // seconds for ISR when on server
   tags?: string[];
   cache?: RequestCache; // browser override: 'no-store' | 'force-cache'
+  timeoutMs?: number;
 };
 
 const isServerSide = () => typeof window === "undefined";
@@ -33,7 +34,23 @@ async function fetchJSON<T>(
         },
       }
     : { cache: opts.cache ?? "no-store" };
-  const res = await fetch(`${base}${pathWithQuery}`, requestInit);
+  const timeoutMs = opts.timeoutMs ?? 9000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch(`${base}${pathWithQuery}`, {
+      ...requestInit,
+      signal: controller.signal,
+    });
+  } catch (error: unknown) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`Request timed out after ${timeoutMs}ms for ${pathWithQuery}`);
+    }
+    throw error;
+  }
+  clearTimeout(timeoutId);
   const contentType = res.headers.get("content-type") ?? "";
   const isJSON = contentType.includes("application/json");
   const bodyText = await res.text();
@@ -94,7 +111,7 @@ export async function fetchStockData(
     return await fetchJSON<HistoricalData>(
       `/api/stocks/${ticker}/historical?${params.toString()}`,
       opts.revalidate ?? 60,
-      opts,
+      { timeoutMs: 10000, ...opts },
     );
   } catch (error) {
     console.error(`There was an error fetching: ${error}`);
@@ -107,9 +124,14 @@ export async function fetchQuote(ticker: string, opts: FetchISROptions = {}) {
     return await fetchJSON<StockData>(
       `/api/stocks/${ticker}/quote`,
       opts.revalidate ?? 30,
-      opts,
+      { timeoutMs: 7000, ...opts },
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("timed out")) {
+      console.warn(`Quote request timed out for ${ticker}`);
+      return;
+    }
     console.error(`Error fetching quote for ${ticker}:`, error);
   }
 }
@@ -123,9 +145,14 @@ export async function fetchSummary(
     return await fetchJSON<QuoteSummaryMinimal>(
       `/api/stocks/${ticker}/summary`,
       opts.revalidate ?? 300,
-      opts,
+      { timeoutMs: 7000, ...opts },
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("timed out")) {
+      console.warn(`Summary request timed out for ${ticker}`);
+      return;
+    }
     console.error(`Error fetching summary for ${ticker}:`, error);
   }
 }
@@ -158,9 +185,14 @@ export async function fetchNews(
     return await fetchJSON<NewsResponse>(
       `/api/stocks/${ticker}/news`,
       opts.revalidate ?? 300,
-      opts,
+      { timeoutMs: 7000, ...opts },
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("timed out")) {
+      console.warn(`News request timed out for ${ticker}`);
+      return;
+    }
     console.error(`Error fetching news for ${ticker}:`, error);
   }
 }
@@ -208,9 +240,14 @@ export async function fetchScreener(
     return await fetchJSON<ScreenerResponse>(
       `/api/stocks/screener?${params.toString()}`,
       opts.revalidate ?? 120,
-      opts,
+      { timeoutMs: 7000, ...opts },
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("timed out")) {
+      console.warn(`Screener request timed out for ${scrId}`);
+      return;
+    }
     console.error(`Error fetching screener for ${scrId}:`, error);
   }
 }
@@ -228,9 +265,14 @@ export async function fetchTrending(
     return await fetchJSON<TrendingResponse>(
       `/api/stocks/trending?${params.toString()}`,
       opts.revalidate ?? 120,
-      opts,
+      { timeoutMs: 7000, ...opts },
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("timed out")) {
+      console.warn(`Trending request timed out`);
+      return;
+    }
     console.error(`Error fetching trending symbols:`, error);
   }
 }
