@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HomeTickerSearch from "@/components/stocks/HomeTickerSearch";
 import StocksExplorer, {
   type ExplorerRow,
 } from "@/components/stocks/StocksExplorer";
@@ -152,9 +151,6 @@ export default async function StocksPage() {
           <p className="mt-2 text-sm text-blue-50 dark:text-slate-200">
             Scan the market, compare leaders and laggards, and jump into any ticker quickly.
           </p>
-          <div className="mt-5 max-w-2xl">
-            <HomeTickerSearch />
-          </div>
         </section>
 
         <section className="mt-8 rounded-xl border border-emerald-200/70 dark:border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/40 to-cyan-50/40 dark:from-gray-900 dark:via-emerald-950/20 dark:to-slate-900 p-4 shadow-sm">

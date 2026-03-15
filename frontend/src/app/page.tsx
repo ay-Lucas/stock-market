@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HomeTickerSearch from "@/components/stocks/HomeTickerSearch";
 import NewsList from "@/components/stocks/NewsList";
 import SectorHeatmap, {
   type SectorHeatmapItem,
@@ -213,9 +212,6 @@ export default async function Home() {
           <p className="mt-2 text-sm text-blue-50 dark:text-slate-200">
             Track indices, top movers, trending names, and major headlines.
           </p>
-          <div className="mt-5 max-w-2xl">
-            <HomeTickerSearch />
-          </div>
         </section>
 
         <section className="mt-8">
