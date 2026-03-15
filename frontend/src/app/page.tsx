@@ -192,7 +192,16 @@ export default async function Home() {
     fetchNews("SPY", { revalidate: 180 }),
   ]);
 
-  const trendingQuotes = trending?.finance?.result?.[0]?.quotes ?? [];
+  const rawTrendingQuotes = trending?.finance?.result?.[0]?.quotes ?? [];
+  const trendingQuotes =
+    rawTrendingQuotes.length > 0 ? rawTrendingQuotes : (gainers?.quotes ?? []);
+  const trendingSource =
+    rawTrendingQuotes.length > 0
+      ? (trending?._meta?.source ?? "yahoo_trending")
+      : "most_actives_fallback";
+  const trendingUpdatedAt = trending?._meta?.updatedAt;
+  const isTrendingStale =
+    Boolean(trending?._meta?.stale) || rawTrendingQuotes.length === 0;
   const topNews: NewsItem[] = news ?? [];
 
   return (
@@ -243,7 +252,30 @@ export default async function Home() {
         <SectorHeatmap sectors={sectorSnapshots} defaultTimeframe="1d" />
 
         <section className="mt-8 rounded-xl border border-emerald-200/70 dark:border-emerald-500/30 bg-gradient-to-br from-white via-emerald-50/40 to-cyan-50/40 dark:from-gray-900 dark:via-emerald-950/20 dark:to-slate-900 p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-emerald-950 dark:text-emerald-100">Trending Symbols</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold text-emerald-950 dark:text-emerald-100">
+              Trending Symbols
+            </h2>
+            <div className="flex items-center gap-2 text-xs">
+              {isTrendingStale && (
+                <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-amber-800 dark:border-amber-500/50 dark:bg-amber-900/40 dark:text-amber-200">
+                  Stale
+                </span>
+              )}
+              <span className="rounded-full border border-emerald-300/70 bg-emerald-100/70 px-2 py-0.5 text-emerald-900 dark:border-emerald-500/50 dark:bg-emerald-900/40 dark:text-emerald-100">
+                {trendingSource === "most_actives_fallback"
+                  ? "Source: Top Gainers Fallback"
+                  : trendingSource === "cache"
+                    ? "Source: Cached Trending"
+                    : "Source: Trending"}
+              </span>
+              {trendingUpdatedAt && (
+                <span className="text-slate-500 dark:text-slate-400">
+                  Updated {new Date(trendingUpdatedAt).toLocaleTimeString()}
+                </span>
+              )}
+            </div>
+          </div>
           <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
             {trendingQuotes.length === 0 && (
               <div className="text-sm text-gray-500 dark:text-gray-400">No trending symbols available.</div>

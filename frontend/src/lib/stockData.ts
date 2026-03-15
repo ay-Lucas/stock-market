@@ -188,6 +188,11 @@ export type TrendingResponse = {
       quotes?: ScreenerQuote[];
     }>;
   };
+  _meta?: {
+    source?: "yahoo_trending" | "cache" | "most_actives_fallback";
+    stale?: boolean;
+    updatedAt?: string;
+  };
 };
 
 export async function fetchScreener(
