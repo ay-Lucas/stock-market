@@ -1,5 +1,8 @@
 import Link from "next/link";
 import HomeTickerSearch from "@/components/stocks/HomeTickerSearch";
+import StocksExplorer, {
+  type ExplorerRow,
+} from "@/components/stocks/StocksExplorer";
 import {
   fetchScreener,
   fetchTrending,
@@ -81,6 +84,35 @@ function ScreenerBlock({
   );
 }
 
+const mergeRows = (
+  sources: Array<{ key: string; quotes: ScreenerQuote[] }>,
+): ExplorerRow[] => {
+  const bySymbol = new Map<string, ExplorerRow>();
+
+  for (const source of sources) {
+    for (const quote of source.quotes) {
+      const symbol = (quote.symbol ?? "").toUpperCase();
+      if (!symbol) continue;
+      const existing = bySymbol.get(symbol);
+      const merged: ExplorerRow = {
+        symbol,
+        name: quote.shortName ?? quote.longName ?? existing?.name,
+        price: quote.regularMarketPrice ?? existing?.price,
+        changePct: quote.regularMarketChangePercent ?? existing?.changePct,
+        volume: quote.regularMarketVolume ?? existing?.volume,
+        marketCap: quote.marketCap ?? existing?.marketCap,
+        sources: existing?.sources ?? [],
+      };
+      if (!merged.sources.includes(source.key)) {
+        merged.sources.push(source.key);
+      }
+      bySymbol.set(symbol, merged);
+    }
+  }
+
+  return [...bySymbol.values()];
+};
+
 export default async function StocksPage() {
   const [mostActive, gainers, losers, undervaluedLargeCaps, trending] =
     await Promise.all([
@@ -101,6 +133,13 @@ export default async function StocksPage() {
   const trendingUpdatedAt = trending?._meta?.updatedAt;
   const isTrendingStale =
     Boolean(trending?._meta?.stale) || rawTrendingQuotes.length === 0;
+  const explorerRows = mergeRows([
+    { key: "most_active", quotes: mostActive?.quotes ?? [] },
+    { key: "gainers", quotes: gainers?.quotes ?? [] },
+    { key: "losers", quotes: losers?.quotes ?? [] },
+    { key: "undervalued", quotes: undervaluedLargeCaps?.quotes ?? [] },
+    { key: "trending", quotes: trendingQuotes },
+  ]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#dbeafe_0%,#f8fafc_38%,#eef2ff_100%)] dark:bg-[radial-gradient(circle_at_20%_0%,#111827_0%,#030712_45%,#1e1b4b_100%)]">
@@ -171,7 +210,37 @@ export default async function StocksPage() {
           </div>
         </section>
 
-        <section className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <StocksExplorer rows={explorerRows} />
+
+        <details className="mt-8 lg:hidden rounded-xl border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/80 p-3 shadow-sm backdrop-blur">
+          <summary className="cursor-pointer list-none font-semibold text-slate-900 dark:text-slate-100">
+            Market Lists (Tap to expand)
+          </summary>
+          <div className="mt-3 grid grid-cols-1 gap-4">
+            <ScreenerBlock
+              title="Most Active"
+              subtitle="Highest trading volume today"
+              items={mostActive?.quotes ?? []}
+            />
+            <ScreenerBlock
+              title="Top Gainers"
+              subtitle="Best performers by daily percent change"
+              items={gainers?.quotes ?? []}
+            />
+            <ScreenerBlock
+              title="Top Losers"
+              subtitle="Largest daily declines"
+              items={losers?.quotes ?? []}
+            />
+            <ScreenerBlock
+              title="Undervalued Large Caps"
+              subtitle="Large-cap names from Yahoo screener"
+              items={undervaluedLargeCaps?.quotes ?? []}
+            />
+          </div>
+        </details>
+
+        <section className="mt-8 hidden lg:grid grid-cols-1 gap-4 lg:grid-cols-2">
           <ScreenerBlock
             title="Most Active"
             subtitle="Highest trading volume today"
